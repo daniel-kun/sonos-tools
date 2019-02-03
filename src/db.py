@@ -13,7 +13,11 @@ def create_indexes(client):
 def find_audio(client, audioConfigHash):
     db = client['sonos-tools']
     audioFiles = db['audio-files']
-    return audioFiles.find_one({"audioConfigHash": audioConfigHash})
+    result = audioFiles.find_one({"audioConfigHash": audioConfigHash})
+    if result == None:
+        return None
+    else:
+        return base64.b64decode(result['audioFile'])
 
 def insert(client, audioConfigHash, audioFile):
     db = client['sonos-tools']
@@ -23,3 +27,9 @@ def insert(client, audioConfigHash, audioFile):
             "audioFile": base64.b64encode(audioFile)
         })
 
+def remove(client, audioConfigHash):
+    db = client['sonos-tools']
+    audioFiles = db['audio-files']
+    return audioFiles.delete_one({
+            "audioConfigHash": audioConfigHash
+        })
