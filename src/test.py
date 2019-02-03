@@ -12,6 +12,8 @@ from playsound import playsound
 
 SONOSTOOLS_GCP_API_KEY = os.environ['SONOSTOOLS_GCP_API_KEY']
 SONOSTOOLS_MONGODB_CONNECTURI = os.environ['SONOSTOOLS_MONGODB_CONNECTURI']
+SONOSTOOLS_SONOSAPI_TOKEN = os.environ['SONOSTOOLS_SONOSAPI_TOKEN']
+SONOSTOOLS_SONOSAPI_PLAYERID = os.environ['SONOSTOOLS_SONOSAPI_PLAYERID']
 
 def get_mime_type(byteBuffer):
     (out, err) = subprocess.Popen(['file', '-b', '--mime-type', '-'], stdin=subprocess.PIPE, stdout=subprocess.PIPE).communicate(byteBuffer)
@@ -20,7 +22,7 @@ def get_mime_type(byteBuffer):
 class TestSonosToolsSystem(unittest.TestCase):
     def test_start_service(self):
         client = db.connect(SONOSTOOLS_MONGODB_CONNECTURI)
-        service.startService(client, SONOSTOOLS_GCP_API_KEY, 8080)
+        service.startService(client, SONOSTOOLS_GCP_API_KEY, SONOSTOOLS_SONOSAPI_TOKEN, SONOSTOOLS_SONOSAPI_PLAYERID, 8090)
 
     def test_Db_roundtrip(self):
         return

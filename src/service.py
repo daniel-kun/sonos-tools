@@ -1,6 +1,8 @@
 import db
+import json
 from functools import partial
 import text_to_speech as tts
+import requests
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 # Result: [0] = audioConfigHash, [1] = True when read from cache, False when synthesize was required
@@ -18,27 +20,35 @@ def getAudioFileFromAudioConfigHash(client, audioConfigHash):
     return db.find_audio(client, audioConfigHash)
 
 class RequestHandler(BaseHTTPRequestHandler):
-    def __init__(self, dbClient, googleApiKey, *args, **kwargs):
+    def __init__(self, dbClient, googleApiKey, sonosAccessToken, sonosPlayerId, *args, **kwargs):
         self.dbClient = dbClient
         self.googleApiKey = googleApiKey
+        self.sonosAccessToken = sonosAccessToken
+        self.sonosPlayerId = sonosPlayerId
         super().__init__(*args, **kwargs)
+
+    def serveAudioFile(self, audioConfigHash):
+        audioFile = getAudioFileFromAudioConfigHash(self.dbClient, audioConfigHash)
+        if audioFile != None:
+            self.send_response(200)
+            self.send_header('Content-Type', 'audio/mpeg')
+            self.end_headers()
+            self.wfile.write(audioFile)
+        else:
+            self.send_response(404)
+            self.end_headers()
+            self.wfile.write('<html><body><h1>Could not find this audio file</h1>\n'.encode('utf-8'))
 
     def do_GET(self):
         # TODO: Read audioFile from DB and return file
         audioFilePrefix = '/static/audioFile/'
+        sonosAuthPrefix = '/sonos_auth/'
         print(self.path)
         if self.path.startswith(audioFilePrefix):
             audioConfigHash = self.path[len(audioFilePrefix):]
-            audioFile = getAudioFileFromAudioConfigHash(self.dbClient, audioConfigHash)
-            if audioFile != None:
-                self.send_response(200)
-                self.send_header('Content-Type', 'audio/mpeg')
-                self.end_headers()
-                self.wfile.write(audioFile)
-            else:
-                self.send_response(404)
-                self.end_headers()
-                self.wfile.write('<html><body><h1>Could not find this audio file</h1>\n'.encode('utf-8'))
+            return self.serveAudioFile(audioConfigHash)
+        elif self.path.startswith(sonosAuthPrefix):
+            raise Exception("Not implemented, yet")
         else:
             self.send_response(404)
             self.end_headers()
@@ -55,23 +65,35 @@ class RequestHandler(BaseHTTPRequestHandler):
                 raise Exception('Invalid "key"')
 
             (audioConfigHash, _) = getTextToSpeechHash(self.dbClient, request['languageCode'], request['text'], self.googleApiKey)
-            self.send_response(501)
-            self.end_headers()
-            self.wfile.write(json.dumps({
-                    "error": "Not fully implemented, yet"
-                }))
-            # TODO: Post request to Sonos API with link to MP3 download
+            request = requests.post("https://api.ws.sonos.com/control/api/v1/players/{0}/audioClip".format(self.sonosPlayerId),
+                    headers={
+                        "Authorization": "Bearer {0}".format(self.sonosAccessToken)
+                    },
+                    json={
+                        "name": "Demo Clip",
+                        "appId": "com.acme.com",
+                        "streamUrl": "http://hr8jeljvudseiccl8kzrps.webrelay.io/static/audioFile/{0}".format(audioConfigHash)
+                    })
+            result = request.json()
+            if request.status_code == 200 and "id" in result:
+                self.send_response(200)
+                self.end_headers()
+                self.wfile.write("Roger, playing sound".encode('utf-8'))
+            else:
+                self.send_response(500)
+                self.end_headers()
+                self.wfile.write("Failed to play sound")
         except Exception as err:
             self.send_response(401)
             self.end_headers()
             self.wfile.write(json.dumps({
-                    "error": err.str()
+                    "error": err.str().encode('utf-8')
                 }))
 
 
-def startService(mongoDbClient, googleApiKey, port):
+def startService(mongoDbClient, googleApiKey, sonosAccessToken, playerId, port):
     try:
-        handler = partial(RequestHandler, mongoDbClient, googleApiKey)
+        handler = partial(RequestHandler, mongoDbClient, googleApiKey, sonosAccessToken, playerId)
         server = HTTPServer(('', port), handler)
         print("Starting server on port {0}...".format(port))
         server.serve_forever()
