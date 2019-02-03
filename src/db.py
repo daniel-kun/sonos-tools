@@ -8,7 +8,26 @@ def connect(connectUri):
 def create_indexes(client):
     db = client['sonos-tools']
     audioFiles = db['audio-files']
+    tokens = db['tokens']
+    tokens.create_indexes([("apiKey", pymongo.ASCENDING)], unique = True)
     return audioFiles.create_index([("audioConfigHash", pymongo.ASCENDING)], unique = True)
+
+def find_apikey(client, apiKey):
+    db = client['sonos-tools']
+    tokens = db['tokens']
+    return tokens.find_one({"apiKey": apiKey})
+
+def update_apikey(client, apiKey, sonosAccessToken, sonosRefreshToken):
+    db = client['sonos-tools']
+    tokens = db['tokens']
+    return tokens.replace_one({
+            "apiKey": apiKey
+        },
+        {
+            "apiKey": apiKey,
+            "sonosAccessToken": sonosAccessToken,
+            "sonosRefreshToken": sonosRefreshToken
+        })
 
 def find_audio(client, audioConfigHash):
     db = client['sonos-tools']
@@ -19,7 +38,7 @@ def find_audio(client, audioConfigHash):
     else:
         return base64.b64decode(result['audioFile'])
 
-def insert(client, audioConfigHash, audioFile):
+def insert_audio(client, audioConfigHash, audioFile):
     db = client['sonos-tools']
     audioFiles = db['audio-files']
     return audioFiles.insert_one({
@@ -27,7 +46,7 @@ def insert(client, audioConfigHash, audioFile):
             "audioFile": base64.b64encode(audioFile)
         })
 
-def remove(client, audioConfigHash):
+def remove_audio(client, audioConfigHash):
     db = client['sonos-tools']
     audioFiles = db['audio-files']
     return audioFiles.delete_one({
