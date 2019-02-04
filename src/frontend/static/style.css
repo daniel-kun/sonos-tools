@@ -1,4 +1,33 @@
+html, body {
+    margin: 0;
+}
+
+body {
+    font-family: 'Verdana';
+    text-align: center;
+    font-size: 16pt;
+}
+
 h1 {
-    color: red;
+    text-align: center;
+    margin: 40pt;
+}
+
+sup.trademark {
+    font-size: 40%;
+}
+
+div.landing {
+    margin: 0 auto;
+    display: inline-block;
+    text-align: center;
+}
+
+p.landing-introduction {
+    text-align: center;
+}
+
+div.landing ol {
+    text-align: left;
 }
 
