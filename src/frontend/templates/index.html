@@ -1,73 +1,11 @@
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="/static/style.css"/>
-        <!-- BEGIN Pre-requisites -->
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-        <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
-        <!-- END Pre-requisites -->
-
-        <script>
-            function start() {
-                gapi.load('auth2', function() {
-                    auth2 = gapi.auth2.init({
-                        client_id: '{{google_auth_client_id}}',
-                    });
-                });
-            }
-        </script>
-
+        <link rel="stylesheet" type="text/css" href="/static/styles/style.css"/>
     </head>
 
     <body>
-        <h1>Sonos Power-Tools</h1>
-
-        <div class="landing">
-            <p class="landing-introduction">Let your Sonos speakers talk to you</p>
-            <p class="landing-introduction">Simple, three-step setup:</p>
-
-            <ol>
-                <li><button id="signinButton" onclick="auth2.grantOfflineAccess().then(signInCallback)">Sign in with Google</button></li>
-                <li>Connect with Sonos to receive an API key</li>
-                <li>HTTP POST the text that you want your speakers to say.</li>
-            </ol>
-        </div>
-
-        <script>
-            function signInCallback(authResult) {
-                console.log(authResult);
-                if (authResult['code']) {
-                    console.log('Success');
-                    var r = new XMLHttpRequest();
-                    r.open('POST', '/receive_google_auth', true)
-                    r.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                    r.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-                    r.send(JSON.stringify({"authCode": authResult['code']}))
-                    /*
-                    // Hide the sign-in button now that the user is authorized, for example:
-                    $('#signinButton').attr('style', 'display: none');
-
-                    // Send the code to the server
-                    $.ajax({
-                        type: 'POST',
-                        url: 'http://example.com/storeauthcode',
-                        // Always include an `X-Requested-With` header in every AJAX request,
-                        // to protect against CSRF attacks.
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        },
-                        contentType: 'application/octet-stream; charset=utf-8',
-                        success: function(result) {
-                            // Handle or verify the server response.
-                        },
-                        processData: false,
-                        data: authResult['code']
-                    });
-                    */
-                } else {
-                    console.log('Error');
-                }
-            }
-        </script>
+        <div id="landing"></div>
+        <script src="/static/js/bundle.js"></script>
     </body>
 </html>
 
