@@ -17,7 +17,18 @@ function responseGoogleLogin(googleUser)
     // The ID token you need to pass to your backend:
     var id_token = googleUser.getAuthResponse().id_token;
 
-    renderRoot(true, false);
+    fetch("/receive_google_auth", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({"token": id_token}), // body data type must match "Content-Type" header
+    }).then(
+        response => {
+            console.log(response)
+            renderRoot(true, false);
+        }); // parses response to JSON
 }
 
 function responseGoogleFailure(error)

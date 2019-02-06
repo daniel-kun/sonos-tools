@@ -5,3 +5,4 @@ playsound
 filetype
 flask
 google-api-python-client
+google-auth

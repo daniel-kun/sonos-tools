@@ -2,9 +2,8 @@ from flask import Flask
 from flask import render_template
 from flask import make_response
 from flask import request
-from apiclient import discovery
-import httplib2
-from oauth2client import client
+from google.oauth2 import id_token
+from google.auth.transport import requests
 import os
 app = Flask(__name__)
 
@@ -19,16 +18,18 @@ def index():
 def receive_google_auth():
     payload = request.json
     print(payload)
-    # Exchange auth code for access token, refresh token, and ID token
-    credentials = client.credentials_from_clientsecrets_and_code(
-            SONOSTOOLS_GOOGLE_AUTH_CLIENTFILE,
-            ['profile', 'email'],
-            payload['authCode'])
+    try:
+        # Specify the CLIENT_ID of the app that accesses the backend:
+        idinfo = id_token.verify_oauth2_token(payload['token'], requests.Request(), SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID)
 
-    # Get profile info from ID token
-    print(credentials)
-    print(credentials.id_token)
-    userid = credentials.id_token['sub']
-    email = credentials.id_token['email']
+        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            raise ValueError('Wrong issuer.')
+
+        # ID token is valid. Get the user's Google Account ID from the decoded token.
+        userid = idinfo['sub']
+        print(userid)
+    except ValueError:
+        # Invalid token
+        pass
     return make_response('Success', 200)
 
