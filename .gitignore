@@ -1,6 +1,6 @@
 # Custom for sonos-tools
 *.sw[po]
-src/static/js/
+src/frontend/static/js/
 node_modules/
 
 # Byte-compiled / optimized / DLL files
