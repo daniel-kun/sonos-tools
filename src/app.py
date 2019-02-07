@@ -8,7 +8,6 @@ from google.auth.transport import requests
 import os
 
 import db
-import text_to_speech as tts
 
 app = Flask(__name__)
 
@@ -74,23 +73,6 @@ def execSonos(apiKey, sonosAccessToken, sonosRefreshToken, sonosPlayerId, audioC
         pass
     return request
 
-def getTextToSpeechHash(client, languageCode, text, apiKey):
-    audioConfigHash = tts.textToAudioConfigHash(languageCode, text)
-    audio = db.find_audio(client, audioConfigHash)
-    if audio == None:
-        (audioConfigHash, audioFile) = tts.textToSpeech(languageCode, text, apiKey)
-        db.insert_audio(client, audioConfigHash, audioFile)
-        return (audioConfigHash, False)
-    else:
-        return (audioConfigHash, True)
-
-@app.route("/api/v1/synthesize", methods=['POST'])
-def synthesize():
-    payload = request.json 
-    dbClient = db.connect(SONOSTOOLS_MONGODB_CONNECTURI)
-    (audioConfigHash, fromCache) = getTextToSpeechHash(dbClient, payload['languageCode'], payload['text'], SONOSTOOLS_GCP_API_KEY)
-    return jsonify(audioConfigHash=audioConfigHash, fromCache=fromCache)
-
 @app.route("/api/v1/speak", methods=['POST'])
 def speak():
     try:
@@ -113,14 +95,6 @@ def speak():
             make_response("Failed to play sound", 500)
     except Exception as err:
         make_response(str(err), 401)
-
-@app.route("/audioFile/<audioConfigHash>")
-def audioFile(audioConfigHash):
-    audioFile = db.find_audio(dbClient, audioConfigHash)
-    if audioFile != None:
-        return make_response((audioFile, 200, {'Content-Type': 'audio/mpeg'}))
-    else:
-        return make_response("<html><body><h1>Could not find this audio file</h1>", 404)
 
 @app.route("/sonos_auth/")
 def sonosAuth():
