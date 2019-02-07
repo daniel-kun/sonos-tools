@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: front
+  name: ingress
   namespace: default
   labels:
-    k8s-app: front
+    k8s-app: ingress
 spec:
   type: LoadBalancer
   externalIPs:
@@ -15,4 +15,23 @@ spec:
     targetPort: 8443
     name: https
   selector:
-    k8s-app: front
+    k8s-app: ingress
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ingress
+spec:
+  containers:
+    - name: ingress
+      image: nginx
+      volumeMounts:
+      - name: config-volume
+        mountPath: /etc/nginx
+  volumes:
+    - name: config-volume
+      configMap:
+        # Provide the name of the ConfigMap containing the files you want
+        # to add to the container
+        name: nginx-ingress-conf
+  restartPolicy: Never
