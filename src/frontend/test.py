@@ -21,11 +21,11 @@ def get_mime_type(byteBuffer):
 
 class TestSonosToolsSystem(unittest.TestCase):
     def test_start_service(self):
+        return
         client = db.connect(SONOSTOOLS_MONGODB_CONNECTURI)
         service.startService(client, SONOSTOOLS_GCP_API_KEY, SONOSTOOLS_SONOSAPI_PLAYERID, 8090)
 
     def test_Db_apikey(self):
-        return
         client = db.connect(SONOSTOOLS_MONGODB_CONNECTURI)
         result = db.find_apikey(client, "XXX")
         self.assertEqual("XXX", result['apiKey'])
