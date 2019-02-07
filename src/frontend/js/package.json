@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack --mode development",
+    "build": "webpack --output ../static/js/bundle.js --mode development --entry ./landing.jsx",
     "watch": "webpack --output ../static/js/bundle.js --mode development --entry ./landing.jsx --watch"
   },
   "keywords": [],
