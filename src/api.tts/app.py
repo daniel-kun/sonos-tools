@@ -3,8 +3,6 @@ from flask import render_template
 from flask import make_response
 from flask import request
 from flask.json import jsonify
-from google.oauth2 import id_token
-from google.auth.transport import requests
 import os
 
 import db
