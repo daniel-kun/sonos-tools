@@ -12,6 +12,7 @@ app = Flask(__name__)
 
 SONOSTOOLS_GCP_API_KEY = os.environ['SONOSTOOLS_GCP_API_KEY']
 SONOSTOOLS_MONGODB_CONNECTURI = os.environ['SONOSTOOLS_MONGODB_CONNECTURI']
+SONOSTOOLS_CLUSTER_PUBLIC_ROOT = os.environ['SONOSTOOLS_CLUSTER_PUBLIC_ROOT']
 
 def getTextToSpeechHash(client, languageCode, text, apiKey):
     audioConfigHash = tts.textToAudioConfigHash(languageCode, text)
@@ -37,7 +38,7 @@ def synthesize():
         print(err)
         return make_response('Invalid request', 500)
     (audioConfigHash, fromCache) = getTextToSpeechHash(dbClient, languageCode, text, SONOSTOOLS_GCP_API_KEY)
-    return jsonify(audioConfigHash=audioConfigHash, fromCache=fromCache, uri='{0}audio/{1}'.format(request.url_root, audioConfigHash))
+    return jsonify(audioConfigHash=audioConfigHash, fromCache=fromCache, uri='{0}/audio/{1}'.format(SONOSTOOLS_CLUSTER_PUBLIC_ROOT, audioConfigHash))
 
 @app.route("/audio/<audioConfigHash>")
 def audioFile(audioConfigHash):

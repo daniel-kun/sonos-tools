@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress
+  namespace: default
+  labels:
+    k8s-app: ingress
+spec:
+  type: LoadBalancer
+  externalIPs:
+  - 116.202.2.24
+  ports:
+  - port: 443
+    targetPort: 443
+    name: https
+  - port: 80
+    targetPort: 80
+    name: http
+  selector:
+    k8s-app: ingress
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ingress
+  labels:
+    k8s-app: ingress
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: ingress
+    spec:
+      containers:
+      - name: ingress
+        image: nginx
+        ports:
+        - containerPort: 80
+          name: http
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/nginx
+      volumes:
+        - name: config-volume
+          configMap:
+            # Provide the name of the ConfigMap containing the files you want
+            # to add to the container
+            name: nginx-ingress-conf
