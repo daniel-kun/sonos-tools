@@ -8,6 +8,7 @@ from google.auth.transport import requests as grequests
 import os
 import requests
 import db
+import account
 
 app = Flask(__name__)
 
@@ -34,11 +35,10 @@ def receive_google_auth():
             raise ValueError('Wrong issuer.')
 
         # ID token is valid. Get the user's Google Account ID from the decoded token.
-        userid = idinfo['sub']
-        print(userid)
+        return jsonify(account.find_account_by_google_user_id(idinfo), 200)
+
     except ValueError:
-        # Invalid token
-        pass
+        return make_response('Invalid token', 401)
     return make_response('Success', 200)
 
 def execSonos(apiKey, sonosAccessToken, sonosRefreshToken, sonosPlayerId, uri):
@@ -110,9 +110,13 @@ def speak():
     except Exception as err:
         return make_response(str(err), 401)
 
-@app.route("/sonos_auth/")
+@app.route("/sonos_auth")
 def sonosAuth():
     raise Exception("Not implemented, yet")
+
+@app.route("/db_init")
+def db_init():
+    return make_response(str(db.create_indexes(dbClient)), 200)
 
 dbClient = db.connect(SONOSTOOLS_MONGODB_CONNECTURI)
 
