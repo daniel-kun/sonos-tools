@@ -5,12 +5,14 @@ import os
 from bson import ObjectId
 
 import account
+import sonos
 import db
 
 SONOSTOOLS_MONGODB_CONNECTURI = os.environ['SONOSTOOLS_MONGODB_CONNECTURI']
 
 class TestSonosToolsFrontendSystem(unittest.TestCase):
     def test_find_account_by_google_user_id(self):
+        return
         acc = account.find_account_by_google_user_id({
                 'sub': 'XXX-FOOBAR',
                 'email': 'd.albuschat@gmail.com',
@@ -30,6 +32,7 @@ class TestSonosToolsFrontendSystem(unittest.TestCase):
         self.assertEqual(str, type(acc['redirectUriRoot']))
 
     def test_update_account_sonos_tokens(self):
+        return
         xxxFoobarObjectId = '5c5ebcc56409600b754a7200'
         dbClient = db.connect(SONOSTOOLS_MONGODB_CONNECTURI)
         accountsCollection = dbClient['sonos-tools']['accounts']
@@ -51,5 +54,79 @@ class TestSonosToolsFrontendSystem(unittest.TestCase):
         self.assertEqual("playback-all", accountDoc['sonos']['scope'])
         self.assertEqual(expires, accountDoc['sonos']['expires_at'])
 
+    def test_sonosListPlayers(self):
+        return
+        dbClient = db.connect(SONOSTOOLS_MONGODB_CONNECTURI)
+        sonos.sonosListPlayers(db.find_account_id(dbClient, '5c5ebe776409600b661ebc32'))
+
+
+    def test_sonosMergePlayerApiKeys_emptyAccount(self):
+        account = {
+            "sonos": {
+            }
+        }
+        playerIds = ["PLAYER_0", "PLAYER_1", "PLAYER_2"]
+        result = sonos.sonosMergePlayerApiKeys(account, playerIds)
+        print(result)
+        self.assertEqual(3, len(result))
+        self.assertEqual("PLAYER_0", result[0]["playerId"])
+        self.assertEqual(str, type(result[0]["apiKey"]))
+        self.assertEqual("PLAYER_1", result[1]["playerId"])
+        self.assertEqual(str, type(result[1]["apiKey"]))
+        self.assertEqual("PLAYER_2", result[2]["playerId"])
+        self.assertEqual(str, type(result[2]["apiKey"]))
+
+    def test_sonosMergePlayerApiKeys_newPlayer(self):
+        account = {
+            "sonos": {
+                "players": [
+                    { "playerId": "PLAYER_0", "apiKey": "APIKEY_0" }
+                ]
+            }
+        }
+        playerIds = ["PLAYER_0", "PLAYER_1"]
+        result = sonos.sonosMergePlayerApiKeys(account, playerIds)
+        print(result)
+        self.assertEqual(2, len(result))
+        self.assertEqual("PLAYER_0", result[0]["playerId"])
+        self.assertEqual("APIKEY_0", result[0]["apiKey"])
+        self.assertEqual("PLAYER_1", result[1]["playerId"])
+        self.assertEqual(str, type(result[1]["apiKey"]))
+        self.assertNotEqual("APIKEY_9", result[1]["apiKey"])
+
+    def test_sonosMergePlayerApiKeys_deletedPlayer(self):
+        account = {
+            "sonos": {
+                "players": [
+                    { "playerId": "PLAYER_0", "apiKey": "APIKEY_0" },
+                    { "playerId": "PLAYER_1", "apiKey": "APIKEY_1" },
+                ]
+            }
+        }
+        playerIds = ["PLAYER_0"]
+        result = sonos.sonosMergePlayerApiKeys(account, playerIds)
+        print(result)
+        self.assertEqual(1, len(result))
+        self.assertEqual("PLAYER_0", result[0]["playerId"])
+        self.assertEqual("APIKEY_0", result[0]["apiKey"])
+
+    def test_sonosMergePlayerApiKeys_addedAnddeletedPlayer(self):
+        account = {
+            "sonos": {
+                "players": [
+                    { "playerId": "PLAYER_0", "apiKey": "APIKEY_0" },
+                    { "playerId": "PLAYER_1", "apiKey": "APIKEY_1" },
+                ]
+            }
+        }
+        playerIds = ["PLAYER_0", "PLAYER_2"]
+        result = sonos.sonosMergePlayerApiKeys(account, playerIds)
+        self.assertEqual(2, len(result))
+        self.assertEqual("PLAYER_0", result[0]["playerId"])
+        self.assertEqual("APIKEY_0", result[0]["apiKey"])
+        self.assertEqual("PLAYER_2", result[1]["playerId"])
+        self.assertEqual(str, type(result[1]["apiKey"]))
+
 if __name__ == '__main__':
     unittest.main()
+

@@ -3,10 +3,10 @@ import { GoogleLogout } from 'react-google-login';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-function renderRoot(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
+function renderRoot(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
 {
     console.log("renderRoot")
-   ReactDOM.render(renderLanding(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRoot), document.getElementById('landing'))
+   ReactDOM.render(renderLanding(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot), document.getElementById('landing'))
 }
 
 function responseGoogleLogin(googleUser)
@@ -29,9 +29,9 @@ function responseGoogleLogin(googleUser)
     .then(json => {
         console.log(json)
         if ("sonos" in json) {
-            renderRoot(json['accountid'], true, json['sonosApiAppKey'], json['redirectUriRoot'])
+            renderRoot(json, true, json['sonosApiAppKey'], json['redirectUriRoot'])
         } else {
-            renderRoot(json['accountid'], false, json['sonosApiAppKey'], json['redirectUriRoot'])
+            renderRoot(json, false, json['sonosApiAppKey'], json['redirectUriRoot'])
         }
     });
 }
@@ -54,7 +54,7 @@ function createSonosAuthUri(clientId, accountid, redirectUri)
     return `https://api.sonos.com/login/v3/oauth?client_id=${clientId}&response_type=code&state=${state}&scope=playback-control-all&redirect_uri=${redirectUri}`
 }
 
-function sonosLogout(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
+function sonosLogout(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
 {
     fetch("/sonos_logout", {
         method: "POST",
@@ -62,20 +62,26 @@ function sonosLogout(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRoot
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({"accountid": accountid}) // TODO: Need stronger authentification here
+        body: JSON.stringify({"accountid": account['accountid']}) // TODO: Need stronger authentification here
     })
     .then(response => response.json())
     .then(json => {
         console.log(json)
-        renderRoot(accountid, false, sonosApiAppKey, redirectUriRoot)
+        renderRoot(account, false, sonosApiAppKey, redirectUriRoot)
     })
     // TODO: Display error message
 }
 
-function renderLanding(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
+function sonosPlayTest(sonos, playerId)
 {
+    // Not yet implemented
+}
+
+function renderLanding(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
+{
+    var accountid = account != null && 'accountid' in account ?  accountid = account['accountid'] : null
     var isGoogleSignedIn = accountid != null
-    console.log(`renderLanding(${accountid}, ${isSonosSignedIn}, ${sonosApiAppKey}, ${redirectUriRoot})`)
+    console.log(`renderLanding(${account}, ${isSonosSignedIn}, ${sonosApiAppKey}, ${redirectUriRoot})`)
     return (<div>
             <h1>Sonos Power-Tools</h1>
 
@@ -95,9 +101,26 @@ function renderLanding(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRo
                     </li>
                     {!isGoogleSignedIn && !isSonosSignedIn && <li>Connect with Sonos to receive an API key</li>}
                     {isGoogleSignedIn && !isSonosSignedIn && <li><a href={createSonosAuthUri(sonosApiAppKey, accountid, redirectUriRoot + "/sonos_auth")}>Connect with Sonos</a> to receive an API key</li>}
-                    {isGoogleSignedIn && isSonosSignedIn && <li>Sonos is signed in (<a href='#' onClick={sonosLogout.bind(null, accountid, sonosApiAppKey, redirectUriRoot)}>log out</a>)</li>}
+                    {isGoogleSignedIn && isSonosSignedIn && <li>Sonos is signed in (<a href='#' onClick={sonosLogout.bind(null, account, sonosApiAppKey, redirectUriRoot)}>log out</a>)</li>}
                     <li>HTTP POST the text that you want your speakers to say.</li>
                 </ol>
+
+                {account != null && 'sonos' in account && 'players' in account.sonos &&
+                    <table>
+                        <tbody>
+                            {account.sonos.players.map(player => {
+                                return (
+                                    <tr key={`player_${player.playerId}`}>
+                                        <td>
+                                            <span>{player.playerId}</span>
+                                        </td>
+                                        <td>
+                                            <a href='#' onClick={sonosPlayTest.bind(this, account.sonos, player.playerId)}>Test now</a>
+                                        </td>
+                                    </tr>)
+                            })}
+                        </tbody>
+                    </table>}
             </div>
         </div>)
 }

@@ -7,13 +7,12 @@ from flask import redirect
 from flask.json import jsonify
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
-from datetime import datetime
-from datetime import timedelta
 import os
 import base64
 import json
 import requests
 import db
+import sonos
 import account
 
 app = Flask(__name__)
@@ -47,43 +46,6 @@ def receive_google_auth():
         return make_response('Invalid token', 401)
     return make_response('Success', 200)
 
-def execSonos(apiKey, sonosAccessToken, sonosRefreshToken, sonosPlayerId, uri):
-    try:
-        headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
-        body = {
-            "name": "Demo Clip",
-            "appId": "com.acme.com",
-            "streamUrl": uri 
-        }
-        request = requests.post("https://api.ws.sonos.com/control/api/v1/players/{0}/audioClip".format(sonosPlayerId),
-                headers=headers,
-                json=body)
-        if request.status_code == 401:
-            print("Sonos API token not valid, trying to refresh")
-            refreshRequest = requests.post("https://api.sonos.com/login/v3/oauth/access", headers=headers, data={
-                "grant_type": "refresh_token",
-                "refresh_token": sonosRefreshToken
-            },
-            auth=(SONOSTOOLS_SONOSAPI_APPKEY, SONOSTOOLS_SONOSAPI_SECRET))
-            if refreshRequest.status_code != 200:
-                print(sonosRefreshToken)
-                print(refreshRequest)
-                raise Exception("Sonos API Access Token invalid and could not be refreshed.")
-            refreshResult = refreshRequest.json()
-            sonosAccessToken = refreshResult['access_token']
-            sonosRefreshToken = refreshResult['refresh_token']
-            db.update_apikey(dbClient, apiKey, sonosAccessToken, sonosRefreshToken)
-            headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
-            print("Refreshed Sonos API token")
-            return requests.post("https://api.ws.sonos.com/control/api/v1/players/{0}/audioClip".format(sonosPlayerId),
-                    headers=headers,
-                    json=body)
-            pass
-        return request
-    except Exception as err:
-        print(err)
-        raise err
-
 @app.route("/api/v1/speak", methods=['POST'])
 def speak():
     try:
@@ -105,7 +67,7 @@ def speak():
         audioConfigHash = synResponse['audioConfigHash']
         fromCache = synResponse['fromCache']
         uri = synResponse['uri']
-        result = execSonos(payload['key'], apiKeyDoc['sonosAccessToken'], apiKeyDoc['sonosRefreshToken'], SONOSTOOLS_SONOSAPI_PLAYERID, uri)
+        result = sonos.sonosPlayClip(dbClient, payload['key'], apiKeyDoc['sonosAccessToken'], apiKeyDoc['sonosRefreshToken'], SONOSTOOLS_SONOSAPI_PLAYERID, uri)
         if result.status_code == 200:
             if fromCache:
                 return make_response("Roger, playing sound (from cache)", 200)
@@ -121,25 +83,7 @@ def sonosAuth():
     sonosAuthCode = request.args.get('code')
     stateObj = json.loads(base64.b64decode(request.args.get('state')))
     accountid = stateObj['accountid']
-    postData = {
-        "grant_type": "authorization_code",
-        "code": sonosAuthCode,
-        "redirect_uri": request.base_url
-    }
-    r = requests.post(
-            'https://api.sonos.com/login/v3/oauth/access',
-            data=postData,
-            auth=(SONOSTOOLS_SONOSAPI_APPKEY, SONOSTOOLS_SONOSAPI_SECRET)).json()
-    sonosAccessToken = r['access_token']
-    sonosRefreshToken = r['refresh_token']
-    sonosScope = r['scope']
-    sonosExpiresAt = datetime.now() + timedelta(seconds=int(r['expires_in']))
-    db.update_account_sonos_tokens(dbClient, accountid, {
-        "access_token": sonosAccessToken,
-        "refresh_token": sonosRefreshToken,
-        "scope": sonosScope,
-        "expires_at": sonosExpiresAt
-    })
+    sonos.sonosAuth(dbClient, sonosAuthCode, accountid)
     return redirect(url_for('index'))
 
 @app.route("/db_init")
