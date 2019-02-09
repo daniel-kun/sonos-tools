@@ -7,8 +7,8 @@ def connect(connectUri):
 
 def find_apikey(client, apiKey):
     db = client['sonos-tools']
-    tokens = db['tokens']
-    return tokens.find_one({"apiKey": apiKey})
+    tokens = db['accounts']
+    return tokens.find_one({"sonos.players.apiKey": apiKey})
 
 def find_audio(client, audioConfigHash):
     db = client['sonos-tools']
