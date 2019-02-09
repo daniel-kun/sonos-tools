@@ -146,5 +146,11 @@ def sonosAuth():
 def db_init():
     return make_response(str(db.create_indexes(dbClient)), 200)
 
+@app.route("/sonos_logout", methods=["POST"])
+def sonosLogout():
+    payload = request.json
+    db.update_account_logout_sonos(dbClient, payload['accountid'])
+    return jsonify({'success': True})
+
 dbClient = db.connect(SONOSTOOLS_MONGODB_CONNECTURI)
 

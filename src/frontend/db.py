@@ -57,3 +57,8 @@ def update_account_sonos_tokens(client, accountid, sonosData):
     accounts = db['accounts']
     return accounts.update_one({'_id': ObjectId(accountid)}, { '$set': { 'sonos': sonosData } })
 
+def update_account_logout_sonos(client, accountid):
+    db = client['sonos-tools']
+    accounts = db['accounts']
+    return accounts.update_one({'_id': ObjectId(accountid)}, { '$unset': { 'sonos': '' } })
+

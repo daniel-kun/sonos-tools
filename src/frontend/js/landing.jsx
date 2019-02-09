@@ -26,7 +26,7 @@ function responseGoogleLogin(googleUser)
         body: JSON.stringify({"token": id_token}), // body data type must match "Content-Type" header
     })
     .then(response => response.json())
-    .then(function(json) {
+    .then(json => {
         console.log(json)
         if ("sonos" in json) {
             renderRoot(json['accountid'], true, json['sonosApiAppKey'], json['redirectUriRoot'])
@@ -54,6 +54,24 @@ function createSonosAuthUri(clientId, accountid, redirectUri)
     return `https://api.sonos.com/login/v3/oauth?client_id=${clientId}&response_type=code&state=${state}&scope=playback-control-all&redirect_uri=${redirectUri}`
 }
 
+function sonosLogout(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
+{
+    fetch("/sonos_logout", {
+        method: "POST",
+        cache: "no-cache",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({"accountid": accountid}) // TODO: Need stronger authentification here
+    })
+    .then(response => response.json())
+    .then(json => {
+        console.log(json)
+        renderRoot(accountid, false, sonosApiAppKey, redirectUriRoot)
+    })
+    // TODO: Display error message
+}
+
 function renderLanding(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
 {
     var isGoogleSignedIn = accountid != null
@@ -77,7 +95,7 @@ function renderLanding(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRo
                     </li>
                     {!isGoogleSignedIn && !isSonosSignedIn && <li>Connect with Sonos to receive an API key</li>}
                     {isGoogleSignedIn && !isSonosSignedIn && <li><a href={createSonosAuthUri(sonosApiAppKey, accountid, redirectUriRoot + "/sonos_auth")}>Connect with Sonos</a> to receive an API key</li>}
-                    {isGoogleSignedIn && isSonosSignedIn && <li>Sonos is signed in</li>}
+                    {isGoogleSignedIn && isSonosSignedIn && <li>Sonos is signed in (<a href='#' onClick={sonosLogout.bind(null, accountid, sonosApiAppKey, redirectUriRoot)}>log out</a>)</li>}
                     <li>HTTP POST the text that you want your speakers to say.</li>
                 </ol>
             </div>
