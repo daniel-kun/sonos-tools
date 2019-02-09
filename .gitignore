@@ -2,6 +2,7 @@
 *.sw[po]
 src/frontend/static/js/
 node_modules/
+__local.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -22,7 +22,6 @@ SONOSTOOLS_MONGODB_CONNECTURI = os.environ['SONOSTOOLS_MONGODB_CONNECTURI']
 SONOSTOOLS_API_TTS_ROOT = os.environ['SONOSTOOLS_API_TTS_ROOT']
 SONOSTOOLS_SONOSAPI_APPKEY = os.environ['SONOSTOOLS_SONOSAPI_APPKEY']
 SONOSTOOLS_SONOSAPI_SECRET = os.environ['SONOSTOOLS_SONOSAPI_SECRET']
-SONOSTOOLS_SONOSAPI_PLAYERID = os.environ['SONOSTOOLS_SONOSAPI_PLAYERID'] # This is only temporary until there is a UI to select the player
 
 @app.route("/")
 def index():
@@ -48,35 +47,33 @@ def receive_google_auth():
 
 @app.route("/api/v1/speak", methods=['POST'])
 def speak():
-    try:
-        payload = request.json 
-        if not ('key' in payload and 'text' in payload and 'languagecode' in payload):
-            raise Exception('Fields "key", "languagecode" and "text" must be included in the request')
+    payload = request.json 
+    if not ('key' in payload and 'text' in payload and 'languagecode' in payload):
+        raise Exception('Fields "key", "languagecode" and "text" must be included in the request')
 
-        apiKeyDoc = db.find_apikey(dbClient, payload['key'])
-        if apiKeyDoc == None:
-            raise Exception('Invalid "key"')
+    apiKeyDoc = db.find_apikey(dbClient, payload['key'])
+    if apiKeyDoc == None:
+        raise Exception('Invalid "key"')
 
-        r = requests.post("{0}/api/v1/synthesize".format(SONOSTOOLS_API_TTS_ROOT), 
-            json={
-                'languagecode': payload['languagecode'],
-                'text': payload['text'],
-                'apikey': payload['key']
-            })
-        synResponse = r.json()
-        audioConfigHash = synResponse['audioConfigHash']
-        fromCache = synResponse['fromCache']
-        uri = synResponse['uri']
-        result = sonos.sonosPlayClip(dbClient, payload['key'], apiKeyDoc['sonosAccessToken'], apiKeyDoc['sonosRefreshToken'], SONOSTOOLS_SONOSAPI_PLAYERID, uri)
-        if result.status_code == 200:
-            if fromCache:
-                return make_response("Roger, playing sound (from cache)", 200)
-            else:
-                return make_response("Roger, playing sound (synthesized just for you!)", 200)
+    r = requests.post("{0}/api/v1/synthesize".format(SONOSTOOLS_API_TTS_ROOT), 
+        json={
+            'languagecode': payload['languagecode'],
+            'text': payload['text'],
+            'apikey': payload['key']
+        })
+    print(r.text)
+    synResponse = r.json()
+    audioConfigHash = synResponse['audioConfigHash']
+    fromCache = synResponse['fromCache']
+    uri = synResponse['uri']
+    result = sonos.sonosPlayClip(dbClient, apiKeyDoc['accountid'], apiKeyDoc['apiKey'], apiKeyDoc['access_token'], apiKeyDoc['refresh_token'], apiKeyDoc['playerId'], uri)
+    if result.status_code == 200:
+        if fromCache:
+            return make_response("Roger, playing sound (from cache)", 200)
         else:
-            return make_response("Failed to play sound", 500)
-    except Exception as err:
-        return make_response(str(err), 401)
+            return make_response("Roger, playing sound (synthesized just for you!)", 200)
+    else:
+        return make_response("Failed to play sound", 500)
 
 @app.route("/sonos_auth")
 def sonosAuth():

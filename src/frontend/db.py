@@ -17,8 +17,17 @@ def create_indexes(client):
 
 def find_apikey(client, apiKey):
     db = client['sonos-tools']
-    tokens = db['tokens']
-    return tokens.find_one({"apiKey": apiKey})
+    tokens = db['accounts']
+    account = tokens.find_one({"sonos.players.apiKey": apiKey})
+    if account == None:
+        return None
+    return ({
+        "accountid": str(account['_id']),
+        "access_token": account['sonos']['access_token'],
+        "refresh_token": account['sonos']['refresh_token'],
+        "playerId": next(player['playerId'] for player in account['sonos']['players'] if player['apiKey'] == apiKey),
+        "apiKey": apiKey
+    })
 
 def update_apikey(client, apiKey, sonosAccessToken, sonosRefreshToken):
     db = client['sonos-tools']

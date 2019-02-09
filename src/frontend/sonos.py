@@ -10,7 +10,7 @@ import requests
 SONOSTOOLS_SONOSAPI_APPKEY = os.environ['SONOSTOOLS_SONOSAPI_APPKEY']
 SONOSTOOLS_SONOSAPI_SECRET = os.environ['SONOSTOOLS_SONOSAPI_SECRET']
 
-def sonosPlayClip(dbClient, apiKey, sonosAccessToken, sonosRefreshToken, sonosPlayerId, uri):
+def sonosPlayClip(dbClient, accountid, apiKey, sonosAccessToken, sonosRefreshToken, playerId, uri):
     try:
         headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
         body = {
@@ -18,7 +18,7 @@ def sonosPlayClip(dbClient, apiKey, sonosAccessToken, sonosRefreshToken, sonosPl
             "appId": "com.acme.com",
             "streamUrl": uri 
         }
-        request = requests.post("https://api.ws.sonos.com/control/api/v1/players/{0}/audioClip".format(sonosPlayerId),
+        request = requests.post("https://api.ws.sonos.com/control/api/v1/players/{0}/audioClip".format(playerId),
                 headers=headers,
                 json=body)
         if request.status_code == 401:
@@ -35,10 +35,10 @@ def sonosPlayClip(dbClient, apiKey, sonosAccessToken, sonosRefreshToken, sonosPl
             refreshResult = refreshRequest.json()
             sonosAccessToken = refreshResult['access_token']
             sonosRefreshToken = refreshResult['refresh_token']
-            db.update_apikey(dbClient, apiKey, sonosAccessToken, sonosRefreshToken)
+            db.update_apikey(dbClient, accountid, sonosAccessToken, sonosRefreshToken)
             headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
             print("Refreshed Sonos API token")
-            return requests.post("https://api.ws.sonos.com/control/api/v1/players/{0}/audioClip".format(sonosPlayerId),
+            return requests.post("https://api.ws.sonos.com/control/api/v1/players/{0}/audioClip".format(playerId),
                     headers=headers,
                     json=body)
             pass
