@@ -72,9 +72,19 @@ function sonosLogout(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
     // TODO: Display error message
 }
 
-function sonosPlayTest(sonos, playerId)
+function sonosPlayTest(apiKey)
 {
-    // Not yet implemented
+    var loc = window.location
+    var speakApiUri = `${loc.protocol}//${loc.host}/api/v1/speak`
+    console.log(speakApiUri)
+    fetch(speakApiUri, {
+        method: "POST",
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({"text": "Test successful", "languagecode": "en-US", "key": apiKey})
+    }).then(response => console.log(response))
 }
 
 function renderLanding(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
@@ -115,7 +125,7 @@ function renderLanding(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot
                                             <span>{player.playerId}</span>
                                         </td>
                                         <td>
-                                            <a href='#' onClick={sonosPlayTest.bind(this, account.sonos, player.playerId)}>Test now</a>
+                                            <a href='#' onClick={sonosPlayTest.bind(this, player.apiKey)}>Test now</a>
                                         </td>
                                     </tr>)
                             })}
