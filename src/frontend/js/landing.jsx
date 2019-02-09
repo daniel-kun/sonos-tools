@@ -3,10 +3,10 @@ import { GoogleLogout } from 'react-google-login';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-function renderRoot(isGoogleSignedIn, isSonosSignedIn)
+function renderRoot(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
 {
     console.log("renderRoot")
-    ReactDOM.render(renderLanding(isGoogleSignedIn, isSonosSignedIn), document.getElementById('landing'))
+   ReactDOM.render(renderLanding(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRoot), document.getElementById('landing'))
 }
 
 function responseGoogleLogin(googleUser)
@@ -24,11 +24,16 @@ function responseGoogleLogin(googleUser)
             "Content-Type": "application/json",
         },
         body: JSON.stringify({"token": id_token}), // body data type must match "Content-Type" header
-    }).then(
-        response => {
-            console.log(response)
-            renderRoot(true, false);
-        }); // parses response to JSON
+    })
+    .then(response => response.json())
+    .then(function(json) {
+        console.log(json)
+        if ("sonos" in json) {
+            renderRoot(json['accountid'], true, json['sonosApiAppKey'], json['redirectUriRoot'])
+        } else {
+            renderRoot(json['accountid'], false, json['sonosApiAppKey'], json['redirectUriRoot'])
+        }
+    });
 }
 
 function responseGoogleFailure(error)
@@ -38,12 +43,21 @@ function responseGoogleFailure(error)
 
 function responseGoogleLogout()
 {
-    renderRoot(false, false);
+    renderRoot(null, false);
 }
 
-function renderLanding(isGoogleSignedIn, isSonosSignedIn)
+function createSonosAuthUri(clientId, accountid, redirectUri)
 {
-    console.log(`renderLanding(${isGoogleSignedIn}, ${isSonosSignedIn})`)
+    var state = window.btoa(JSON.stringify({
+                'accountid': accountid
+        }))
+    return `https://api.sonos.com/login/v3/oauth?client_id=${clientId}&response_type=code&state=${state}&scope=playback-control-all&redirect_uri=${redirectUri}`
+}
+
+function renderLanding(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
+{
+    var isGoogleSignedIn = accountid != null
+    console.log(`renderLanding(${accountid}, ${isSonosSignedIn}, ${sonosApiAppKey}, ${redirectUriRoot})`)
     return (<div>
             <h1>Sonos Power-Tools</h1>
 
@@ -61,12 +75,13 @@ function renderLanding(isGoogleSignedIn, isSonosSignedIn)
                             onFailure={responseGoogleFailure}/>}
                     {isGoogleSignedIn && <GoogleLogout onLogoutSuccess={responseGoogleLogout}/>}
                     </li>
-                    <li>Connect with Sonos to receive an API key</li>
+                    {!isSonosSignedIn && <li><a href={createSonosAuthUri(sonosApiAppKey, accountid, redirectUriRoot + "/sonos_auth")}>Connect with Sonos</a> to receive an API key</li>}
+                    {isSonosSignedIn && <li>Sonos is signed in</li>}
                     <li>HTTP POST the text that you want your speakers to say.</li>
                 </ol>
             </div>
         </div>)
 }
 
-renderRoot(false, false)
+renderRoot(null, false)
 

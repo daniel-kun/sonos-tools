@@ -35,7 +35,7 @@ def receive_google_auth():
             raise ValueError('Wrong issuer.')
 
         # ID token is valid. Get the user's Google Account ID from the decoded token.
-        return jsonify(account.find_account_by_google_user_id(idinfo), 200)
+        return jsonify(account.find_account_by_google_user_id(idinfo))
 
     except ValueError:
         return make_response('Invalid token', 401)

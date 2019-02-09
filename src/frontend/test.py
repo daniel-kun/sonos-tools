@@ -16,6 +16,10 @@ class TestSonosToolsFrontendSystem(unittest.TestCase):
         self.assertEqual('https://www.google.de/', acc['picture'])
         self.assertEqual(True, 'accountid' in acc)
         self.assertEqual(str, type(acc['accountid']))
+        self.assertEqual(True, 'sonosApiAppKey' in acc)
+        self.assertEqual(str, type(acc['sonosApiAppKey']))
+        self.assertEqual(True, 'redirectUriRoot' in acc)
+        self.assertEqual(str, type(acc['redirectUriRoot']))
 
 if __name__ == '__main__':
     unittest.main()
