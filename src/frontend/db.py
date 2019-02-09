@@ -1,5 +1,6 @@
 import pymongo
 from pymongo import MongoClient
+from bson import ObjectId
 import base64
 
 def connect(connectUri):
@@ -39,8 +40,20 @@ def find_account(client, userid):
         'userid': userid
     })
 
+def find_account_id(client, accountid):
+    db = client['sonos-tools']
+    accounts = db['accounts']
+    return accounts.find_one({
+        '_id': ObjectId(accountid)
+    })
+
 def insert_account(client, account):
     db = client['sonos-tools']
     accounts = db['accounts']
     return accounts.insert_one(account)
+
+def update_account_sonos_tokens(client, accountid, sonosData):
+    db = client['sonos-tools']
+    accounts = db['accounts']
+    return accounts.update_one({'_id': ObjectId(accountid)}, { '$set': { 'sonos': sonosData } })
 

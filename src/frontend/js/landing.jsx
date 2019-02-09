@@ -75,8 +75,9 @@ function renderLanding(accountid, isSonosSignedIn, sonosApiAppKey, redirectUriRo
                             onFailure={responseGoogleFailure}/>}
                     {isGoogleSignedIn && <GoogleLogout onLogoutSuccess={responseGoogleLogout}/>}
                     </li>
-                    {!isSonosSignedIn && <li><a href={createSonosAuthUri(sonosApiAppKey, accountid, redirectUriRoot + "/sonos_auth")}>Connect with Sonos</a> to receive an API key</li>}
-                    {isSonosSignedIn && <li>Sonos is signed in</li>}
+                    {!isGoogleSignedIn && !isSonosSignedIn && <li>Connect with Sonos to receive an API key</li>}
+                    {isGoogleSignedIn && !isSonosSignedIn && <li><a href={createSonosAuthUri(sonosApiAppKey, accountid, redirectUriRoot + "/sonos_auth")}>Connect with Sonos</a> to receive an API key</li>}
+                    {isGoogleSignedIn && isSonosSignedIn && <li>Sonos is signed in</li>}
                     <li>HTTP POST the text that you want your speakers to say.</li>
                 </ol>
             </div>

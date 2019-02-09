@@ -1,11 +1,17 @@
 from flask import Flask
 from flask import render_template
 from flask import make_response
+from flask import url_for
 from flask import request
+from flask import redirect
 from flask.json import jsonify
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
+from datetime import datetime
+from datetime import timedelta
 import os
+import base64
+import json
 import requests
 import db
 import account
@@ -112,7 +118,29 @@ def speak():
 
 @app.route("/sonos_auth")
 def sonosAuth():
-    raise Exception("Not implemented, yet")
+    sonosAuthCode = request.args.get('code')
+    stateObj = json.loads(base64.b64decode(request.args.get('state')))
+    accountid = stateObj['accountid']
+    postData = {
+        "grant_type": "authorization_code",
+        "code": sonosAuthCode,
+        "redirect_uri": request.base_url
+    }
+    r = requests.post(
+            'https://api.sonos.com/login/v3/oauth/access',
+            data=postData,
+            auth=(SONOSTOOLS_SONOSAPI_APPKEY, SONOSTOOLS_SONOSAPI_SECRET)).json()
+    sonosAccessToken = r['access_token']
+    sonosRefreshToken = r['refresh_token']
+    sonosScope = r['scope']
+    sonosExpiresAt = datetime.now() + timedelta(seconds=int(r['expires_in']))
+    db.update_account_sonos_tokens(dbClient, accountid, {
+        "access_token": sonosAccessToken,
+        "refresh_token": sonosRefreshToken,
+        "scope": sonosScope,
+        "expires_at": sonosExpiresAt
+    })
+    return redirect(url_for('index'))
 
 @app.route("/db_init")
 def db_init():
