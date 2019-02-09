@@ -19,7 +19,7 @@ spec:
           name: http
         env:
         - name: SONOSTOOLS_API_TTS_ROOT
-          value: http://api.tts:5000
+          value: http://api-tts:5000
         - name: SONOSTOOLS_SONOSAPI_PLAYERID
           value: RINCON_7828CAB3AC9801400
         - name: SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID
@@ -42,6 +42,11 @@ spec:
             configMapKeyRef:
               name: secrets
               key: sonos-tools.sonosapi_secret
+        - name: SONOSTOOLS_REDIRECT_ROOT 
+          valueFrom:
+            configMapKeyRef:
+              name: secrets
+              key: sonos-tools.redirect_root
 ---
 apiVersion: v1
 kind: Service
