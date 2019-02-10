@@ -93,12 +93,25 @@ function renderLanding(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot
     var isGoogleSignedIn = accountid != null
     console.log(`renderLanding(${account}, ${isSonosSignedIn}, ${sonosApiAppKey}, ${redirectUriRoot})`)
     return (<div>
-            <h1>Sonos Power-Tools</h1>
-
+            <div className="top-bar secondary"/>
             <div className="landing">
-                <p className="landing-introduction">Let your Sonos speakers talk to you</p>
-                <p className="landing-introduction">Simple, three-step setup:</p>
-
+                <h1>SONOS</h1>
+                <h2>speaks!</h2>
+                <p className="landing-introduction">Integrate your SONOS speakers into your<br/>
+home automation.</p>
+                <p className="landing-introduction">Get notified of events, in high fidelity.</p>
+                <img class="speaker-left" src="/static/img/sonos-bubble-left.svg"/>
+                <img class="speaker-right" src="/static/img/sonos-bubble-right.svg"/>
+                
+                {/*
+                <GoogleLogin 
+                    clientId="166334197578-sem3ib4jfiqm8k59npc1s3ddrro5f5bs.apps.googleusercontent.com"
+                    isSignedIn={true}
+                    onSuccess={responseGoogleLogin}
+                    onFailure={responseGoogleFailure}/>
+                    */}
+            </div>
+            <div className="section-two secondary">
                 <ol>
                     <li>
                     {!isGoogleSignedIn && 
