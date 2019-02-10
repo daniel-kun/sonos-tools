@@ -122,7 +122,8 @@ function renderLanding(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot
                                 return (
                                     <tr key={`player_${player.playerId}`}>
                                         <td>
-                                            <span>{player.playerId}</span>
+                                            <p>Name: {player.playerId}</p>
+                                            <p>API Key: {player.apiKey}</p>
                                         </td>
                                         <td>
                                             <a href='#' onClick={sonosPlayTest.bind(this, player.apiKey)}>Test now</a>
