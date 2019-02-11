@@ -9,6 +9,7 @@ import requests
 
 SONOSTOOLS_SONOSAPI_APPKEY = os.environ['SONOSTOOLS_SONOSAPI_APPKEY']
 SONOSTOOLS_SONOSAPI_SECRET = os.environ['SONOSTOOLS_SONOSAPI_SECRET']
+SONOSTOOLS_REDIRECT_ROOT = os.environ['SONOSTOOLS_REDIRECT_ROOT']
 
 def sonosPlayClip(dbClient, accountid, apiKey, sonosAccessToken, sonosRefreshToken, playerId, uri):
     try:
@@ -51,7 +52,7 @@ def sonosAuth(dbClient, sonosAuthCode, accountid):
     postData = {
         "grant_type": "authorization_code",
         "code": sonosAuthCode,
-        "redirect_uri": request.base_url
+        "redirect_uri": '{0}/sonos_auth'.format(SONOSTOOLS_REDIRECT_ROOT)
     }
     r = requests.post(
             'https://api.sonos.com/login/v3/oauth/access',
