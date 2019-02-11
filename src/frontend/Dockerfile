@@ -13,5 +13,5 @@ RUN npm install && npm run build
 WORKDIR /sonos-tools/frontend
 RUN pip3 install -r requirements.txt
 COPY *.py ./
-ENTRYPOINT ["flask", "run", "-h", "0.0.0.0", "-p", "5001"]
+ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:5001", "app:app"]
 
