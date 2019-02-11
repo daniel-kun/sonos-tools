@@ -32,18 +32,23 @@ spec:
       labels:
         k8s-app: ingress
     spec:
+      volumes:
+      - name: config-volume
+        configMap:
+          name: nginx-ingress-conf
+      - name: certs
+        secret:
+          secretName: ingress-cert
       containers:
       - name: ingress
         image: nginx
         ports:
         - containerPort: 80
           name: http
+        - containerPort: 443
+          name: https
         volumeMounts:
         - name: config-volume
           mountPath: /etc/nginx
-      volumes:
-        - name: config-volume
-          configMap:
-            # Provide the name of the ConfigMap containing the files you want
-            # to add to the container
-            name: nginx-ingress-conf
+        - name: certs
+          mountPath: /etc/certs/
