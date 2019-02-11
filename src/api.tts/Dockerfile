@@ -3,5 +3,5 @@ WORKDIR /sonos-tools/api.tts/
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 COPY *.py ./
-ENTRYPOINT ["flask", "run", "-h", "0.0.0.0", "-p", "5000"]
+ENTRYPOINT ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
 
