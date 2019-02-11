@@ -23,6 +23,14 @@ SONOSTOOLS_API_TTS_ROOT = os.environ['SONOSTOOLS_API_TTS_ROOT']
 SONOSTOOLS_SONOSAPI_APPKEY = os.environ['SONOSTOOLS_SONOSAPI_APPKEY']
 SONOSTOOLS_SONOSAPI_SECRET = os.environ['SONOSTOOLS_SONOSAPI_SECRET']
 
+_dbClient = None
+
+def dbClient():
+    global _dbClient
+    if _dbClient == None:
+        _dbClient = db.connect(SONOSTOOLS_MONGODB_CONNECTURI)
+    return _dbClient
+
 @app.route("/")
 def index():
     return render_template('index.html', google_auth_client_id=SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID)
@@ -39,7 +47,7 @@ def receive_google_auth():
             raise ValueError('Wrong issuer.')
 
         # ID token is valid. Get the user's Google Account ID from the decoded token.
-        return jsonify(account.find_account_by_google_user_id(idinfo))
+        return jsonify(account.find_account_by_google_user_id(dbClient(), idinfo))
 
     except ValueError:
         return make_response('Invalid token', 401)
@@ -51,7 +59,7 @@ def speak():
     if not ('key' in payload and 'text' in payload and 'languagecode' in payload):
         raise Exception('Fields "key", "languagecode" and "text" must be included in the request')
 
-    apiKeyDoc = db.find_apikey(dbClient, payload['key'])
+    apiKeyDoc = db.find_apikey(dbClient(), payload['key'])
     if apiKeyDoc == None:
         raise Exception('Invalid "key"')
 
@@ -66,7 +74,7 @@ def speak():
     audioConfigHash = synResponse['audioConfigHash']
     fromCache = synResponse['fromCache']
     uri = synResponse['uri']
-    result = sonos.sonosPlayClip(dbClient, apiKeyDoc['accountid'], apiKeyDoc['apiKey'], apiKeyDoc['access_token'], apiKeyDoc['refresh_token'], apiKeyDoc['playerId'], uri)
+    result = sonos.sonosPlayClip(dbClient(), apiKeyDoc['accountid'], apiKeyDoc['apiKey'], apiKeyDoc['access_token'], apiKeyDoc['refresh_token'], apiKeyDoc['playerId'], uri)
     if result.status_code == 200:
         if fromCache:
             return make_response("Roger, playing sound (from cache)", 200)
@@ -80,18 +88,16 @@ def sonosAuth():
     sonosAuthCode = request.args.get('code')
     stateObj = json.loads(base64.b64decode(request.args.get('state')))
     accountid = stateObj['accountid']
-    sonos.sonosAuth(dbClient, sonosAuthCode, accountid)
+    sonos.sonosAuth(dbClient(), sonosAuthCode, accountid)
     return redirect(url_for('index'))
 
 @app.route("/db_init")
 def db_init():
-    return make_response(str(db.create_indexes(dbClient)), 200)
+    return make_response(str(db.create_indexes(dbClient())), 200)
 
 @app.route("/sonos_logout", methods=["POST"])
 def sonosLogout():
     payload = request.json
-    db.update_account_logout_sonos(dbClient, payload['accountid'])
+    db.update_account_logout_sonos(dbClient(), payload['accountid'])
     return jsonify({'success': True})
-
-dbClient = db.connect(SONOSTOOLS_MONGODB_CONNECTURI)
 
