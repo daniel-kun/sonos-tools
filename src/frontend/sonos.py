@@ -37,12 +37,16 @@ def sonosPlayClip(dbClient, accountid, apiKey, sonosAccessToken, sonosRefreshTok
             sonosAccessToken = refreshResult['access_token']
             sonosRefreshToken = refreshResult['refresh_token']
             db.update_apikey(dbClient, accountid, sonosAccessToken, sonosRefreshToken)
-            headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
             print("Refreshed Sonos API token")
-            return requests.post("https://api.ws.sonos.com/control/api/v1/players/{0}/audioClip".format(playerId),
+            headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
+            audioClipRequest = requests.post("https://api.ws.sonos.com/control/api/v1/players/{0}/audioClip".format(playerId),
                     headers=headers,
                     json=body)
-            pass
+            if audioClipRequest.status_code != 200:
+                print(sonosAccessToken)
+                print(refreshRequest)
+                raise Exception("Sonos audioClip request failed with status code {0}:\n{1}.".format(audioClipRequest.status_code, audioClipRequest.text))
+            return audioClipRequest
         return request
     except Exception as err:
         print(err)

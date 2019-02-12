@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER="v1"
+VER="v2"
 IMAGE="$SONOSTOOLS_DOCKER_REPO/sonos-tools_api.tts:$VER"
 
 docker build -t "$IMAGE" .
