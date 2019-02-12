@@ -1,4 +1,4 @@
-FROM python:3.7-slim
+FROM danielkun/sonos-tools_base-image:v1
 WORKDIR /sonos-tools/api.tts/
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
