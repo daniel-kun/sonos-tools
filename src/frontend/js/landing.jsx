@@ -137,7 +137,7 @@ function renderLoggedIn(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoo
                         return (
                             <tr key={`player_${player.playerId}`}>
                                 <td>
-                                    <p className="player-name">Player „{player.playerId}”</p>
+                                    <p className="player-name">Player „{'name' in player ? player.name : player.playerId}”</p>
                                     <p className="api-key-label">Your API key for this player is:</p>
                                     <div>
                                         <span className="api-key">{player.apiKey}</span>

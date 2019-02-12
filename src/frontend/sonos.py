@@ -84,7 +84,7 @@ def sonosListPlayers(sonosAccessToken, sonosRefreshToken):
         groups = requests.get('https://api.ws.sonos.com/control/api/v1/households/{0}/groups'.format(householdId),
             headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }).json()
         for player in groups['players']:
-            playerIds.append(player['id'])
+            playerIds.append({"playerId": player['id'], "name": player['name']})
     return playerIds
 
 def sonosMergePlayerApiKeys(players, playerIds):
@@ -94,7 +94,7 @@ def sonosMergePlayerApiKeys(players, playerIds):
             return playerApiKeyDict[playerId]
         else:
             return str(uuid.uuid4())
-    return [{'playerId': playerId, 'apiKey': getApiKey(playerId)} for playerId in playerIds]
+    return [{'playerId': playerId['playerId'], 'name': playerId['name'], 'apiKey': getApiKey(playerId['playerId'])} for playerId in playerIds]
 
 def sonosUpdatePlayerApiKeys(dbClient, accountid):
     account = db.find_account_id(dbClient, accountid)
