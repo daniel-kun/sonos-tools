@@ -1,0 +1,6 @@
+pymongo
+requests
+dnspython
+gunicorn
+flask
+google-auth
