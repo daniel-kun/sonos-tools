@@ -10,11 +10,26 @@ def _hash(obj):
     return hasher.hexdigest()
 
 def textToAudioConfig(languageCode, text):
-    return {
-        'input': { 'text': text },
-        'voice': { 'languageCode': languageCode },
-        'audioConfig': { 'audioEncoding': 'MP3' }
+    languageProfiles = {
+        'de-DE': {
+            'input': { 'text': text },
+            'voice': { 'languageCode': languageCode },
+            'audioConfig': { 'audioEncoding': 'MP3', "speakingRate": "1.25", "pitch": "-1.0" }
+        },
+        'en-US': {
+            'input': { 'text': text },
+            'voice': { 'languageCode': languageCode },
+            'audioConfig': { 'audioEncoding': 'MP3', "speakingRate": "1.00", "pitch": "-1.0" }
+        },
     }
+    if languageCode in languageProfiles:
+        return languageProfiles[languageCode]
+    else:
+        return {
+            'input': { 'text': text },
+            'voice': { 'languageCode': languageCode },
+            'audioConfig': { 'audioEncoding': 'MP3' }
+        }
 
 def textToAudioConfigHash(languageCode, text):
     return _hash(textToAudioConfig(languageCode, text))
