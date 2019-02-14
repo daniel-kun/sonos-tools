@@ -27,6 +27,8 @@ metadata:
     k8s-app: ingress
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:

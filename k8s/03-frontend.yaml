@@ -6,6 +6,8 @@ metadata:
     k8s-app: frontend
 spec:
   replicas: 1
+  strategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
@@ -13,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: danielkun/sonos-tools_frontend:v4
+        image: danielkun/sonos-tools_frontend:v5
         ports:
         - containerPort: 5001
           name: http
