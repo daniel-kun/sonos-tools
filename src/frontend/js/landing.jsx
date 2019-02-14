@@ -3,10 +3,59 @@ import { GoogleLogout } from 'react-google-login';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+function sonosPlayTest(apiKey, text)
+{
+    var loc = window.location
+    var speakApiUri = `${loc.protocol}//${loc.host}/api/v1/speak`
+    console.log(speakApiUri)
+    fetch(speakApiUri, {
+        method: "POST",
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({"text": text, "languagecode": "en-US", "key": apiKey})
+    }).then(response => console.log(response))
+}
+
+class SonosPlayerView extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            testText: 'I am alive!'
+        }
+    }
+
+    handleChange(ev) {
+        this.setState({
+            testText: ev.target.value
+        });
+    }
+
+    handleSubmit(ev) {
+        sonosPlayTest(this.props.player.apiKey, this.state.testText)
+        ev.preventDefault()
+    }
+
+    render() {
+        return (
+            <tr>
+                <td>
+                    <p className="player-name">Player „{'name' in this.props.player ? this.props.player.name : this.props.player.playerId}”</p>
+                    <form onSubmit={this.handleSubmit.bind(this)}>
+                        <input type="text" value={this.state.testText} onChange={this.handleChange.bind(this)}/>
+                        <input type="submit" className="sonos test-button" value="Test now!"/>
+                    </form>
+                </td>
+            </tr>)
+    }
+
+}
+
 function renderRoot(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
 {
     console.log("renderRoot")
-   ReactDOM.render(render(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot), document.getElementById('landing'))
+    ReactDOM.render(render(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot), document.getElementById('landing'))
 }
 
 function responseGoogleLogin(googleUser)
@@ -72,21 +121,6 @@ function sonosLogout(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
     // TODO: Display error message
 }
 
-function sonosPlayTest(apiKey)
-{
-    var loc = window.location
-    var speakApiUri = `${loc.protocol}//${loc.host}/api/v1/speak`
-    console.log(speakApiUri)
-    fetch(speakApiUri, {
-        method: "POST",
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({"text": "Test successful", "languagecode": "en-US", "key": apiKey})
-    }).then(response => console.log(response))
-}
-
 function renderLanding()
 {
     return (<div className="landing">
@@ -134,17 +168,7 @@ function renderLoggedIn(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoo
             <table>
                 <tbody>
                     {account.sonos.players.map(player => {
-                        return (
-                            <tr key={`player_${player.playerId}`}>
-                                <td>
-                                    <p className="player-name">Player „{'name' in player ? player.name : player.playerId}”</p>
-                                    <p className="api-key-label">Your API key for this player is:</p>
-                                    <div>
-                                        <span className="api-key">{player.apiKey}</span>
-                                        <button className="sonos test-button" onClick={sonosPlayTest.bind(this, player.apiKey)}>Test now</button>
-                                    </div>
-                                </td>
-                            </tr>)
+                        return (<SonosPlayerView player={player} key={`player_${player.playerId}`}/>)
                     })}
                 </tbody>
             </table>
