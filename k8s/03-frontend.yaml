@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: danielkun/sonos-tools_frontend:v5
+        image: danielkun/sonos-tools_frontend:v6
         ports:
         - containerPort: 5001
           name: http
