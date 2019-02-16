@@ -32,7 +32,17 @@ div.secondary {
     background-color: #4cc9d4;
 }
 
+div.privacy {
+    padding-top: 30pt;
+    padding-left: 80pt;
+    padding-right: 80pt;
+}
+
 div.top-bar {
+    height: 30pt;
+}
+
+div.bar {
     height: 30pt;
 }
 

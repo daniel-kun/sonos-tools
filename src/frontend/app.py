@@ -101,3 +101,6 @@ def sonosLogout():
     db.update_account_logout_sonos(dbClient(), payload['accountid'])
     return jsonify({'success': True})
 
+@app.route("/privacy", methods=['GET'])
+def privacy():
+    return render_template('privacy.html', serviceName="„sonos-tools”")
