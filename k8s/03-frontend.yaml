@@ -8,6 +8,9 @@ spec:
   replicas: 1
   strategy:
     type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 2
+      maxUnavailable: 0
   template:
     metadata:
       labels:
@@ -15,7 +18,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: danielkun/sonos-tools_frontend:v7
+        image: danielkun/sonos-tools_frontend:v9
         ports:
         - containerPort: 5001
           name: http
