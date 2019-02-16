@@ -1,12 +1,7 @@
-<html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="/static/styles/style.css"/>
-        <link href="https://fonts.googleapis.com/css?family=M+PLUS+1p" rel="stylesheet"/>
-    </head>
+{% extends 'base.html' %}
 
-    <body>
-        <div class="root" id="landing"></div>
-        <script src="/static/js/bundle.js"></script>
-    </body>
-</html>
+{% block content%}
+<div class="root" id="landing"></div>
+<script src="/static/js/bundle.js"></script>
+{% endblock %}
 
