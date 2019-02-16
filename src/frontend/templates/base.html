@@ -4,6 +4,13 @@
         <link href="https://fonts.googleapis.com/css?family=M+PLUS+1p" rel="stylesheet"/>
     </head>
 
-    <body>{% block content %}{% endblock %}</body>
+    <body>
+        <div class="root">
+            <div class="bar secondary">
+                <a href="/"><img src="/static/img/sonos-tools-home.svg" class="home"/></a>
+            </div>
+            {% block content %}{% endblock %}</body>
+            <div class="bar secondary"></div>
+        </div>
 </html>
 

@@ -13,19 +13,16 @@ body {
 }
 
 div.root {
-    height: 100%;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-content: stretch;
+
     margin: 0;
     padding: 0;
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-}
-
-div.root.inner {
-    overflow: scroll;
+    min-width: 100%;
+    width: 100%;
+    min-height: 100%;
 }
 
 div.secondary {
@@ -60,6 +57,7 @@ div.bottom-bar {
     bottom: 0;
     right: 0;
     height: 30pt;
+    display: block;
     position: absolute;
 }
 
@@ -71,7 +69,6 @@ div.section-two {
 h1 {
     font-size: 72pt;
     text-align: center;
-    margin-top: 1em;
     margin-bottom: 0;
 }
 
@@ -82,7 +79,7 @@ h2 {
 }
 
 div.landing {
-    margin: 0 auto;
+    margin-bottom: 1em;
     width: 100%;
     display: inline-block;
     text-align: center;

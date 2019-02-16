@@ -210,15 +210,12 @@ function render(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
     var accountid = account != null && 'accountid' in account ?  accountid = account['accountid'] : null
     var isGoogleSignedIn = accountid != null
     console.log(`render(${account}, ${isSonosSignedIn}, ${sonosApiAppKey}, ${redirectUriRoot})`)
-    return (<div className="root inner">
-            <div className="top-bar secondary">
-                <a href="/"><img src="/static/img/sonos-tools-home.svg" className="home"/></a>
-            </div>
-            {!isGoogleSignedIn && renderLanding()}
-            {isGoogleSignedIn && !isSonosSignedIn && renderLoggedInWithoutSonos(sonosApiAppKey, accountid, redirectUriRoot)}
-            {isGoogleSignedIn && isSonosSignedIn && renderLoggedIn(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)}
-            <div className="bottom-bar secondary"/>
-        </div>)
+    if (!isGoogleSignedIn)
+        return renderLanding()
+    else if (isGoogleSignedIn && !isSonosSignedIn)
+        return renderLoggedInWithoutSonos(sonosApiAppKey, accountid, redirectUriRoot)
+    else if (isGoogleSignedIn && isSonosSignedIn)
+        return renderLoggedIn(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
 }
 
 renderRoot(null, false)

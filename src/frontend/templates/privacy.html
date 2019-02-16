@@ -1,45 +1,43 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="bar secondary"></div>
-<div class="privacy">
-<h2>Privacy Policy</h2>
-<h3>1. Introduction</h3>
-<p>1.1. {{serviceName}} is a service brought to you by an individual, Daniel Albuschat [we], because of the joy to provide useful and innovative services to others.</p>
-<p>1.2. We have no intention whatsoever to use your personal information for marketing, reselling, ad-servicing or any other purposes other than providing you the functionality of {{serviceName}}.</p>
-<p>1.3. To provide you the functionality of {{serviceName}}, we need to store personal data from you.</p>
-<p>1.4. Since hosting and processing happens partially by service providers, it is necessary that this personal data can be accessed by third-party service providers, too.</p>
-<h3>2. How we use your personal data</h3>
-<p>2.1. To identify you, we made it possible to sign up with your Google account. In this process, we collect your e-mail address, full-name and Google 'user id'. We store your e-mail-address in plain text form, and your Google 'user id' in hashed form.</p>
-<p>2.2. To connect your requests with the Sonos services, we need to store an 'access token' and 'refresh token' from the Sonos API. These should be connectable to your user information stored by Sonos using Sonos' internal database.</p>
-<p>2.3. We store your Sonos Player names and unique internal IDs to make it possible to send requests to specific Players.</p>
-<p>2.4. Texts that you post to our service in order to play on your Sonos Players is 'synthesized' to audio. This audio is stored permanently as a 'cache' to prevent synthesizing the text again the next time you want to play the same text again, because synthesizing text to speech audio is costly.</p>
-<p>2.4.1. These cached audio files are not linked to your account, but, depending on what content you post, they may or may not contain personal information about you.</p>
-<p>2.4.2. We canot provide you a way to delete these cached audio files, because they are not linked to your personal account.</p>
-<p>2.5. We may store access logs to our services when you visit our service in a browser or post data to our API. These access logs may contain: Browser user agent, IP address, requested URL, posted content, date and time of the access, the referrer (the website that may have linked to our services), if sent by the browser.</p>
-<h3>3. Third-party service providers with access to your data</h3>
-<p>3.1. We store all our permanent data on MongoDB Atlas. See https://www.mongodb.com/cloud/trust for more information.</p>
-<p>3.2. We synthesize text that you post to our service using Google Cloud API's "Cloud Text-to-Speech". See https://policies.google.com/privacy for more information.</p>
-<p>3.3. Our services run on infrastructure provided by Hetzner Cloud. See https://www.hetzner.com/rechtliches/datenschutz for more information.</p>
-<p>3.3. Because some of these providers use data centers and networks worldwide, your data may be transferred and temporariliy stored on servers outside the EU.</p>
-<h3>4. Retaining your stored data and deleting all data</h3>
-<p>4.1. We store your personal information as long as you keep your account registered at {{serviceName}}, to provide you the functionality that we offer.</p>
-<p>4.2. We can send you all the data stored about you by reaching out to us at d.albuschat@gmail.com, usually within 10 business days.</p>
-<p>4.3. By sending us a short notice containing the words 'delete all my data, please' to d.albuschat@gmail.com, you can request a deletion of all your personal data from our databases. This happens usually within 10 business days.</p>
-<h3>5. Cookies</h3>
-<p>5.1. We use cookies to save your login across multiple browsing sessions, so that you don't need to log in every time your visit {{serviceName}}.</p>
-<p>5.2. Most of the cookies are stored by our third-party service providers, especially Google. See https://policies.google.com/technologies/cookies?hl=en for more information.</p>
-<p>5.3. You can see and delete all cookies that we store in your browser.</p>
-<h3>6. Updates to our privacy policy</h3>
-<p>6.1. We may update this privacy policy from time to time. Please check this site regularly to inform yourself about updates to our privacy policy.</p>
-<h3>7. Operator</h3>
-<p>7.1. This service is owned and operated by Daniel Albuschat.</p>
-<p>7.2. I am a private individual and do not operate a business based in {{serviceName}}.</p>
-<p>7.3. You can contact me at:</p>
-<p>7.3.1. Daniel AlbuschatRingstraße 6a42499 HückeswagenGERMANY</p>
-<p>7.3.2. d.albuschat@gmail.com</p>
-<p>7.3.3. @dalbuschat at Twitter</p>
-<p>7.3.4. Daniel Albuschat is the data protection officer.</p>
-</div>
-<div class="bar secondary"></div>
+        <div class="privacy">
+        <h2>Privacy Policy</h2>
+        <h3>1. Introduction</h3>
+        <p>1.1. {{serviceName}} is a service brought to you by an individual, Daniel Albuschat [we], because of the joy to provide useful and innovative services to others.</p>
+        <p>1.2. We have no intention whatsoever to use your personal information for marketing, reselling, ad-servicing or any other purposes other than providing you the functionality of {{serviceName}}.</p>
+        <p>1.3. To provide you the functionality of {{serviceName}}, we need to store personal data from you.</p>
+        <p>1.4. Since hosting and processing happens partially by service providers, it is necessary that this personal data can be accessed by third-party service providers, too.</p>
+        <h3>2. How we use your personal data</h3>
+        <p>2.1. To identify you, we made it possible to sign up with your Google account. In this process, we collect your e-mail address, full-name and Google 'user id'. We store your e-mail-address in plain text form, and your Google 'user id' in hashed form.</p>
+        <p>2.2. To connect your requests with the Sonos services, we need to store an 'access token' and 'refresh token' from the Sonos API. These should be connectable to your user information stored by Sonos using Sonos' internal database.</p>
+        <p>2.3. We store your Sonos Player names and unique internal IDs to make it possible to send requests to specific Players.</p>
+        <p>2.4. Texts that you post to our service in order to play on your Sonos Players is 'synthesized' to audio. This audio is stored permanently as a 'cache' to prevent synthesizing the text again the next time you want to play the same text again, because synthesizing text to speech audio is costly.</p>
+        <p>2.4.1. These cached audio files are not linked to your account, but, depending on what content you post, they may or may not contain personal information about you.</p>
+        <p>2.4.2. We canot provide you a way to delete these cached audio files, because they are not linked to your personal account.</p>
+        <p>2.5. We may store access logs to our services when you visit our service in a browser or post data to our API. These access logs may contain: Browser user agent, IP address, requested URL, posted content, date and time of the access, the referrer (the website that may have linked to our services), if sent by the browser.</p>
+        <h3>3. Third-party service providers with access to your data</h3>
+        <p>3.1. We store all our permanent data on MongoDB Atlas. See https://www.mongodb.com/cloud/trust for more information.</p>
+        <p>3.2. We synthesize text that you post to our service using Google Cloud API's "Cloud Text-to-Speech". See https://policies.google.com/privacy for more information.</p>
+        <p>3.3. Our services run on infrastructure provided by Hetzner Cloud. See https://www.hetzner.com/rechtliches/datenschutz for more information.</p>
+        <p>3.3. Because some of these providers use data centers and networks worldwide, your data may be transferred and temporariliy stored on servers outside the EU.</p>
+        <h3>4. Retaining your stored data and deleting all data</h3>
+        <p>4.1. We store your personal information as long as you keep your account registered at {{serviceName}}, to provide you the functionality that we offer.</p>
+        <p>4.2. We can send you all the data stored about you by reaching out to us at d.albuschat@gmail.com, usually within 10 business days.</p>
+        <p>4.3. By sending us a short notice containing the words 'delete all my data, please' to d.albuschat@gmail.com, you can request a deletion of all your personal data from our databases. This happens usually within 10 business days.</p>
+        <h3>5. Cookies</h3>
+        <p>5.1. We use cookies to save your login across multiple browsing sessions, so that you don't need to log in every time your visit {{serviceName}}.</p>
+        <p>5.2. Most of the cookies are stored by our third-party service providers, especially Google. See https://policies.google.com/technologies/cookies?hl=en for more information.</p>
+        <p>5.3. You can see and delete all cookies that we store in your browser.</p>
+        <h3>6. Updates to our privacy policy</h3>
+        <p>6.1. We may update this privacy policy from time to time. Please check this site regularly to inform yourself about updates to our privacy policy.</p>
+        <h3>7. Operator</h3>
+        <p>7.1. This service is owned and operated by Daniel Albuschat.</p>
+        <p>7.2. I am a private individual and do not operate a business based in {{serviceName}}.</p>
+        <p>7.3. You can contact me at:</p>
+        <p>7.3.1. Daniel AlbuschatRingstraße 6a42499 HückeswagenGERMANY</p>
+        <p>7.3.2. d.albuschat@gmail.com</p>
+        <p>7.3.3. @dalbuschat at Twitter</p>
+        <p>7.3.4. Daniel Albuschat is the data protection officer.</p>
+        </div>
 {% endblock %}
