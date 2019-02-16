@@ -88,6 +88,12 @@ div.landing {
     text-align: center;
 }
 
+img.home {
+    height: 26pt;
+    padding: 2pt;
+    padding-left: 4pt;
+}
+
 img.speaker-left {
     position: absolute;
     top: 50pt;
