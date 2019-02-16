@@ -208,12 +208,20 @@ span.api-key {
     white-space:nowrap
 }
 
-a:visited {
+div.bottom a {
     color: white;
 }
 
-a {
+div.bottom a:visited {
     color: white;
+}
+
+a:visited {
+    color: black;
+}
+
+a {
+    color: black;
     font-size: 10pt;
     text-decoration: underline;
 }

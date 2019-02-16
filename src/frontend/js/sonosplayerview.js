@@ -21,7 +21,8 @@ export class SonosPlayerView extends React.Component {
         super(props);
         this.state = {
             testText: 'I am alive!',
-            language: 'en-US'
+            language: 'en-US',
+            previewExpanded: false
         }
     }
 
@@ -42,6 +43,12 @@ export class SonosPlayerView extends React.Component {
         ev.preventDefault()
     }
 
+    toggleExpandHTTP(ev) {
+        this.setState( Object.assign(this.state, {
+            previewExpanded: !this.state.previewExpanded
+        }));
+    }
+
     render() {
         var supportedLanguages = [
             { language: 'de-DE', name:  'German' },
@@ -60,6 +67,16 @@ export class SonosPlayerView extends React.Component {
             { language: 'tr-TR', name:  'Turkish' },
         ]
 
+        var preview = 
+`POST /api/v1/speak HTTP/1.1
+Host: sonos-tools.from-anywhere.com
+Content-Type: application/json
+
+{
+   "text": "${this.state.testText}",
+   "languagecode": "${this.state.language}",
+   "key": "${this.props.player.apiKey}"
+}`
         return (
             <tr>
                 <td>
@@ -71,6 +88,11 @@ export class SonosPlayerView extends React.Component {
                         </select>
                         <input type="submit" className="sonos test-button" value="Test now!"/>
                     </form>
+                    <div className="preview">
+                        {!this.state.previewExpanded && <a href='#' onClick={this.toggleExpandHTTP.bind(this)}>Show web request</a>}
+                        {this.state.previewExpanded && <a href='#' onClick={this.toggleExpandHTTP.bind(this)}>Hide web request</a>}
+                        {this.state.previewExpanded && <pre className="code">{preview} </pre>}
+                    </div>
                 </td>
             </tr>)
     }
