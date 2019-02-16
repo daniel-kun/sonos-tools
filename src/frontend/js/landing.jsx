@@ -200,7 +200,7 @@ function renderLoggedIn(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoo
             </table>
             <img className="speaker-right corner" src="/static/img/sonos-bubble-right.svg"/>
             <GoogleLogout className="google-logout" onLogoutSuccess={responseGoogleLogout}/>
-            <a className="unlink" href="#" onClick={sonosLogout.bind(null, account, sonosApiAppKey, redirectUriRoot)}>unlink this SONOS account</a>
+            <a className="unlink" href="#" onClick={sonosLogout.bind(null, account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)}>unlink this SONOS account</a>
         </div>)
 }
 
