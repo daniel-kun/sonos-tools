@@ -85,6 +85,7 @@ h1 {
 
 h2 {
     margin-top: 0;
+    margin-bottom: 20pt;
     font-size: 32pt;
     text-align: center;
 }
@@ -187,7 +188,7 @@ div.content {
 }
 
 div.content table {
-    margin-top: 50pt;
+    margin-top: 20pt;
 }
 
 p.player-name {
