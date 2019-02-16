@@ -31,15 +31,24 @@ div.secondary {
 
 div.privacy {
     padding-top: 30pt;
-    padding-left: 80pt;
-    padding-right: 80pt;
+    padding-left: 20pt;
+    padding-right: 20pt;
+    font-size: 12pt;
 }
 
-div.top-bar {
-    height: 30pt;
+@media only screen and (min-width: 800px) {
+    div.privacy {
+        padding-top: 30pt;
+        padding-left: 80pt;
+        padding-right: 80pt;
+    }
 }
 
 div.bar {
+    height: 30pt;
+}
+
+div.top-bar {
     height: 30pt;
 }
 
@@ -52,13 +61,15 @@ div.top-bar span {
     font-size: 14pt;
 }
 
-div.bottom-bar {
-    left: 0;
-    bottom: 0;
-    right: 0;
-    height: 30pt;
-    display: block;
-    position: absolute;
+div.bar.bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 1em;
+}
+
+div.bar.bottom a {
+    padding: 0 5pt;
 }
 
 div.section-two {
@@ -67,14 +78,14 @@ div.section-two {
 }
 
 h1 {
-    font-size: 72pt;
+    font-size: 48pt;
     text-align: center;
     margin-bottom: 0;
 }
 
 h2 {
     margin-top: 0;
-    font-size: 46pt;
+    font-size: 32pt;
     text-align: center;
 }
 
@@ -93,16 +104,34 @@ img.home {
 
 img.speaker-left {
     position: absolute;
-    top: 50pt;
-    left: 6%;
-    width: 15%;
+    top: 40pt;
+    left: 10pt;
+    width: 80pt;
+}
+
+@media only screen and (min-width: 800px) {
+    img.speaker-left {
+        position: absolute;
+        top: 50pt;
+        left: 6%;
+        width: 15%;
+    }
 }
 
 img.speaker-right{
     position: absolute;
-    top: 250pt;
-    right: 10%;
-    width: 19%;
+    top: 40pt;
+    right: 10pt;
+    width: 80pt;
+}
+
+@media only screen and (min-width: 800px) {
+    img.speaker-right{
+        position: absolute;
+        top: 250pt;
+        right: 10%;
+        width: 19%;
+    }
 }
 
 img.speaker-right.corner {
@@ -176,6 +205,16 @@ span.api-key {
     padding: 1pt 10pt;
     background-color: #f8f8f8;
     white-space:nowrap
+}
+
+a:visited {
+    color: white;
+}
+
+a {
+    color: white;
+    font-size: 10pt;
+    text-decoration: underline;
 }
 
 a.unlink {

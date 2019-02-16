@@ -153,8 +153,7 @@ function renderLanding()
     return (<div className="landing">
             <h1>SONOS</h1>
             <h2>speaks!</h2>
-            <p className="landing-introduction">Integrate your SONOS speakers into your<br/>
-home automation.</p>
+            <p className="landing-introduction">Integrate your SONOS speakers into your home automation.</p>
             <p className="landing-introduction">Get notified of events, in high fidelity.</p>
             <img className="speaker-left" src="/static/img/sonos-bubble-left.svg"/>
             <img className="speaker-right" src="/static/img/sonos-bubble-right.svg"/>

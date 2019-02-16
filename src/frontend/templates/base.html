@@ -2,6 +2,7 @@
     <head>
         <link rel="stylesheet" type="text/css" href="/static/styles/style.css"/>
         <link href="https://fonts.googleapis.com/css?family=M+PLUS+1p" rel="stylesheet"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
 
     <body>
@@ -10,7 +11,10 @@
                 <a href="/"><img src="/static/img/sonos-tools-home.svg" class="home"/></a>
             </div>
             {% block content %}{% endblock %}</body>
-            <div class="bar secondary"></div>
+            <div class="bar secondary bottom">
+                <a href="/privacy">Privacy Policy</a>
+                <a href="https://twitter.com/dalbuschat" target="_blank">@dalbuschat</a>
+            </div>
         </div>
 </html>
 
