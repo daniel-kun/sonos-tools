@@ -1,14 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-function sonosPlayTest(apiKey, language, text)
+function speakApiUri()
 {
     var loc = window.location
-    var speakApiUri = `${loc.protocol}//${loc.host}/api/v1/speak`
-    console.log(speakApiUri)
-    fetch(speakApiUri, {
+    return `${loc.protocol}//${loc.host}/api/v1/speak`
+}
+
+function sonosPlayTest(apiKey, language, text)
+{
+    fetch(speakApiUri(), {
         method: "POST",
-        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        cache: "no-cache",
         headers: {
             "Content-Type": "application/json"
         },
@@ -16,13 +19,60 @@ function sonosPlayTest(apiKey, language, text)
     }).then(response => console.log(response))
 }
 
+function previewHttp(text, languageCode, apiKey)
+{
+    return (
+`POST /api/v1/speak HTTP/1.1
+Host: sonos-tools.from-anywhere.com
+Content-Type: application/json
+
+{
+   "text": "${text}",
+   "languagecode": "${languageCode}",
+   "key": "${apiKey}"
+}`)
+}
+
+function previewJavaScript(text, languageCode, apiKey)
+{
+    return (
+`fetch("${speakApiUri()}", {
+    method: "POST",
+    cache: "no-cache",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        "text": "${text}",
+        "languagecode": "${languageCode}",
+        "key": "${apiKey}"
+    })
+});`)
+}
+
+function previewCSharp(text, languageCode, apiKey)
+{
+}
+
+function previewPython(text, languageCode, apiKey)
+{
+}
+
+var previewModes = [
+    { name: 'JavaScript',   renderer: previewJavaScript },
+    { name: 'raw HTTP',     renderer: previewHttp },
+    { name: 'C#',           renderer: previewCSharp },
+    { name: 'Python',       renderer: previewPython }
+]
+
 export class SonosPlayerView extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            selectedPlayer: props.players[0],
+            selectedPreviewMode: previewModes[0],
             testText: 'I am alive!',
-            language: 'en-US',
-            previewExpanded: false
+            language: 'en-US'
         }
     }
 
@@ -39,14 +89,29 @@ export class SonosPlayerView extends React.Component {
     }
 
     handleSubmit(ev) {
-        sonosPlayTest(this.props.player.apiKey, this.state.language, this.state.testText)
+        sonosPlayTest(this.state.selectedPlayer.apiKey, this.state.language, this.state.testText)
         ev.preventDefault()
     }
 
-    toggleExpandHTTP(ev) {
-        this.setState( Object.assign(this.state, {
-            previewExpanded: !this.state.previewExpanded
+    handleChangeSelectedPlayer(ev) {
+        this.setState(Object.assign(this.state, {
+            selectedPlayer: ev.target.value
         }));
+    }
+
+    selectPreviewMode(mode) {
+        console.log(`selecting preview mode ${mode}`)
+        this.setState(Object.assign(this.state, {
+            selectedPreviewMode: mode
+        }));
+    }
+
+    renderPreview(mode, state) {
+        if (mode) {
+            return (<pre>{mode.renderer(state.testText, state.language, state.selectedPlayer.apiKey)}</pre>)
+        } else {
+            return (<div/>)
+        }
     }
 
     render() {
@@ -67,34 +132,24 @@ export class SonosPlayerView extends React.Component {
             { language: 'tr-TR', name:  'Turkish' },
         ]
 
-        var preview = 
-`POST /api/v1/speak HTTP/1.1
-Host: sonos-tools.from-anywhere.com
-Content-Type: application/json
-
-{
-   "text": "${this.state.testText}",
-   "languagecode": "${this.state.language}",
-   "key": "${this.props.player.apiKey}"
-}`
-        return (
-            <tr>
-                <td>
-                    <p className="player-name">Player „{'name' in this.props.player ? this.props.player.name : this.props.player.playerId}”</p>
-                    <form onSubmit={this.handleSubmit.bind(this)}>
-                        <input type="text" value={this.state.testText} onChange={this.handleChangeTestText.bind(this)}/>
-                        <select value={this.state.language} onChange={this.handleChangeLanguage.bind(this)}>
-                            {supportedLanguages.map(lang => <option key={`lang_${lang.language}`} value={lang.language}>{lang.name}</option>)}
-                        </select>
-                        <input type="submit" className="sonos test-button" value="Test now!"/>
-                    </form>
-                    <div className="preview">
-                        {!this.state.previewExpanded && <a href='#' onClick={this.toggleExpandHTTP.bind(this)}>Show web request</a>}
-                        {this.state.previewExpanded && <a href='#' onClick={this.toggleExpandHTTP.bind(this)}>Hide web request</a>}
-                        {this.state.previewExpanded && <pre className="code">{preview} </pre>}
-                    </div>
-                </td>
-            </tr>)
+        return (<div>
+            <form onSubmit={this.handleSubmit.bind(this)}>
+                <select value={this.state.selectedPlayer} onChange={this.handleChangeSelectedPlayer.bind(this)}>
+                    {this.props.players.map(player => <option key={`player_${player.playerId}`} value={player.apiKey}>{player.name}</option>)}
+                </select>
+                <input type="text" value={this.state.testText} onChange={this.handleChangeTestText.bind(this)}/>
+                <select value={this.state.language} onChange={this.handleChangeLanguage.bind(this)}>
+                    {supportedLanguages.map(lang => <option key={`lang_${lang.language}`} value={lang.language}>{lang.name}</option>)}
+                </select>
+                <input type="submit" className="sonos test-button" value="Test now!"/>
+            </form>
+            <div className="preview">
+                <div className="previewPicker">
+                    {previewModes.map(mode => <div key={`preview_${mode.name}`} className={`previewPickerEntry ${mode.name == this.state.selectedPreviewMode.name ? "selected" : ""}`} onClick={this.selectPreviewMode.bind(this, mode)}>{mode.name}</div>)}
+                </div>
+                {this.renderPreview(this.state.selectedPreviewMode, this.state)}
+            </div>
+        </div>)
     }
 
 }

@@ -116,13 +116,7 @@ function renderLoggedIn(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoo
             {account.sonos.players.length == 0 && <div><p>We have not found any players.</p><p>Go shopping and come back when you bought and installed a new SONOS player ;-)</p></div>}
             {account.sonos.players.length == 1 && <span>We have found 1 player.</span>}
             {account.sonos.players.length > 1 && <span>We have found {account.sonos.players.length} players.</span>}
-            <table>
-                <tbody>
-                    {account.sonos.players.map(player => {
-                        return (<SonosPlayerView player={player} key={`player_${player.playerId}`}/>)
-                    })}
-                </tbody>
-            </table>
+            <SonosPlayerView players={account.sonos.players}/>
             <img className="speaker-right corner" src="/static/img/sonos-bubble-right.svg"/>
             <GoogleLogout className="google-logout" onLogoutSuccess={responseGoogleLogout}/>
             <a className="unlink" href="#" onClick={sonosLogout.bind(null, account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)}>unlink this SONOS account</a>

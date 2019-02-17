@@ -234,3 +234,17 @@ a.unlink {
     bottom: 35pt;
 }
 
+div.previewPicker {
+    display: flex;
+}
+
+div.previewPickerEntry {
+    cursor: pointer;
+    background-color: lightgray;
+    border: 1px solid gray;
+}
+
+div.previewPickerEntry.selected {
+    background-color: red;
+}
+
