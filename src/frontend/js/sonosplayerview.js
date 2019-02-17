@@ -106,7 +106,7 @@ export class SonosPlayerView extends React.Component {
         this.state = {
             selectedPlayer: props.players[0],
             selectedPreviewMode: previewModes[0],
-            testText: 'I am alive!',
+            testText: 'Test successful!',
             language: 'en-US'
         }
     }
