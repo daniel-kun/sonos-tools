@@ -33,6 +33,16 @@ Content-Type: application/json
 }`)
 }
 
+function previewCurl(text, languageCode, apiKey)
+{
+    return (
+`curl ${speakApiUri()} -X POST -H "Content-Type: application/json" --data '{
+    "text": "${text}",
+    "languagecode": "${languageCode}",
+    "key": "${apiKey}"
+}';`)
+}
+
 function previewJavaScript(text, languageCode, apiKey)
 {
     return (
@@ -83,6 +93,7 @@ print(r.text)`)
 }
 
 var previewModes = [
+    { name: 'curl',         renderer: previewCurl },
     { name: 'JavaScript',   renderer: previewJavaScript },
     { name: 'C#',           renderer: previewCSharp },
     { name: 'Python',       renderer: previewPython },
