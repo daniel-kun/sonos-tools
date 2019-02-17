@@ -23,7 +23,7 @@ function previewHttp(text, languageCode, apiKey)
 {
     return (
 `POST /api/v1/speak HTTP/1.1
-Host: sonos-tools.from-anywhere.com
+Host: ${window.location.hostname} 
 Content-Type: application/json
 
 {
@@ -84,9 +84,9 @@ print(r.text)`)
 
 var previewModes = [
     { name: 'JavaScript',   renderer: previewJavaScript },
-    { name: 'raw HTTP',     renderer: previewHttp },
     { name: 'C#',           renderer: previewCSharp },
-    { name: 'Python',       renderer: previewPython }
+    { name: 'Python',       renderer: previewPython },
+    { name: 'Raw HTTP',     renderer: previewHttp },
 ]
 
 export class SonosPlayerView extends React.Component {
@@ -156,7 +156,7 @@ export class SonosPlayerView extends React.Component {
             { language: 'tr-TR', name:  'Turkish' },
         ]
 
-        return (<div>
+        return (<div className="playerView">
             <form onSubmit={this.handleSubmit.bind(this)}>
                 <select value={this.state.selectedPlayer} onChange={this.handleChangeSelectedPlayer.bind(this)}>
                     {this.props.players.map(player => <option key={`player_${player.playerId}`} value={player.apiKey}>{player.name}</option>)}
@@ -167,6 +167,7 @@ export class SonosPlayerView extends React.Component {
                 </select>
                 <input type="submit" className="sonos test-button" value="Test now!"/>
             </form>
+            <span>Here's some example code:</span>
             <div className="preview">
                 <div className="previewPicker">
                     {previewModes.map(mode => <div key={`preview_${mode.name}`} className={`previewPickerEntry ${mode.name == this.state.selectedPreviewMode.name ? "selected" : ""}`} onClick={this.selectPreviewMode.bind(this, mode)}>{mode.name}</div>)}

@@ -140,6 +140,7 @@ img.speaker-right.corner {
     right: 10%;
     width: 19%;
     top: unset;
+    z-index: -1;
 }
 
 p.landing-introduction {
@@ -185,27 +186,7 @@ button.google-logout {
 
 div.content {
     padding: 30pt;
-}
-
-div.content table {
-    margin-top: 20pt;
-}
-
-p.player-name {
-    font-weight: bold;
-    color: #279ba5;
-}
-
-p.api-key-label {
-    margin: 0;
-}
-
-span.api-key {
-    margin: 5pt 0 0 0;
-    border: 1px solid #aaa;
-    padding: 1pt 10pt;
-    background-color: #f8f8f8;
-    white-space:nowrap
+    padding-bottom: 10pt;
 }
 
 div.bottom a {
@@ -229,22 +210,55 @@ a {
 a.unlink {
     font-weight: bold;
     color: #279ba5;
-    position: absolute;
-    left: 30pt;
-    bottom: 35pt;
+}
+
+div.playerView {
+    margin-top: 10pt;
 }
 
 div.previewPicker {
+    font-size: 10pt;
     display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-top: 10pt;
+    margin-bottom: 15pt;
+}
+
+@media only screen and (min-width: 800px) {
+    div.previewPicker {
+        width: 70%;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 div.previewPickerEntry {
+    flex-grow: 1;
+    text-align: center;
+    padding: 6px;
     cursor: pointer;
     background-color: lightgray;
-    border: 1px solid gray;
+    border-top: 1px solid gray;
+    border-bottom: 1px solid gray;
+    border-left: 1px solid gray;
+}
+
+div.previewPickerEntry:last-child {
+    border-right: 1px solid gray;
 }
 
 div.previewPickerEntry.selected {
-    background-color: red;
+    background-color: #4cc9d4;
 }
 
+pre {
+    font-size: 10pt;
+    overflow: auto;
+    padding-bottom: 10pt;
+    background-color: #ffffffcc;
+}
+
+div.preview pre {
+    height: 16em;
+}
