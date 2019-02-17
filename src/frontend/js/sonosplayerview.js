@@ -47,15 +47,39 @@ function previewJavaScript(text, languageCode, apiKey)
         "languagecode": "${languageCode}",
         "key": "${apiKey}"
     })
-});`)
+}).then(response => console.log(response))`)
 }
 
 function previewCSharp(text, languageCode, apiKey)
 {
+    return (
+`HttpWebRequest request = (HttpWebRequest) WebRequest.Create("${speakApiUri()}");
+request.Method = "POST";
+request.ContentType = "application/json";
+byte[] payload = Encoding.UTF8.GetBytes(@"{
+    ""text"": ""${text}"",
+    ""languagecode"": ""${languageCode}"",
+    ""key"": ""${apiKey}""
+}");
+request.GetRequestStream().Write(payload, 0, payload.Length);
+using (var reader = new StreamReader(request.GetResponse().GetResponseStream()))
+{
+    string response = reader.ReadToEnd();
+}`);
 }
 
 function previewPython(text, languageCode, apiKey)
 {
+    return (
+`import requests
+r = requests.post("${speakApiUri()}",
+        headers={"Content-Type": "application/json"},
+        json={
+            "text": "${text}",
+            "languagecode": "${languageCode}",
+            "key": "${apiKey}"
+        })
+print(r.text)`)
 }
 
 var previewModes = [
