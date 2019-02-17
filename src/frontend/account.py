@@ -1,3 +1,4 @@
+import hashlib
 import db
 import os
 
@@ -6,7 +7,8 @@ SONOSTOOLS_MONGODB_CONNECTURI = os.environ['SONOSTOOLS_MONGODB_CONNECTURI']
 SONOSTOOLS_REDIRECT_ROOT = os.environ['SONOSTOOLS_REDIRECT_ROOT']
 
 def find_account_by_google_user_id(dbClient, idinfo):
-    userid = idinfo['sub']
+    hashed = hashlib.sha256(idinfo['sub'].encode('utf-8'))
+    userid = hashed.hexdigest()
     account = db.find_account(dbClient, userid)
     if account == None:
         # First login for this google user, create an account:
