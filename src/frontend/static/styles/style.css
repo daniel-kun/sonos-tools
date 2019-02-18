@@ -72,6 +72,20 @@ div.bar.bottom a {
     padding: 0 5pt;
 }
 
+div.bar.cookie {
+    background-color: black;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10pt;
+    padding: 0 1em;
+}
+
+div.bar.cookie a {
+    color: white;
+}
+
 div.section-two {
     margin-top: 50pt;
     padding: 50pt;
@@ -261,4 +275,8 @@ pre {
 
 div.preview pre {
     height: 16em;
+}
+
+p.importantNote {
+    font-size: 10pt;
 }

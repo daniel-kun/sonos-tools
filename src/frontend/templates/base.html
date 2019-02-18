@@ -6,15 +6,47 @@
     </head>
 
     <body>
+        {% if not cookies_accepted %}
+        <script type="text/javascript">
+            function acceptCookies()
+            {
+                fetch('/cookies_accepted',
+                    {
+                        method: 'POST',
+                        credentials: 'include',
+                        cache: 'no-cache',
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            accept_cookies: true
+                        })
+                    }).then(response => {
+                            document.getElementById('cookie_bar').style.display = 'none';
+                        })
+            }
+        </script>
+        {% endif %}
+
         <div class="root">
             <div class="bar secondary">
                 <a href="/"><img src="/static/img/sonos-tools-home.svg" class="home"/></a>
             </div>
             {% block content %}{% endblock %}</body>
-            <div class="bar secondary bottom">
-                <a href="/privacy">Privacy Policy</a>
-                <a href="https://twitter.com/dalbuschat" target="_blank">@dalbuschat</a>
+            <div>
+                {% if not cookies_accepted %}
+                <div id="cookie_bar" class="bar cookie">
+                    <p><!-- intentionally left blank--></p>
+                    <span>We use cookies. See our <a href="/privacy">Privacy Policy</a>.</span>
+                    <button onclick="window.acceptCookies()">Accept</button>
+                </div>
+                {% endif %}
+                <div class="bar secondary bottom">
+                    <a href="/privacy">Privacy Policy</a>
+                    <a href="https://twitter.com/dalbuschat" target="_blank">@dalbuschat</a>
+                </div>
             </div>
         </div>
+
 </html>
 

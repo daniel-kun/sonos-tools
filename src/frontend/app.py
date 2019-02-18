@@ -4,6 +4,7 @@ from flask import make_response
 from flask import url_for
 from flask import request
 from flask import redirect
+from flask import session
 from flask.json import jsonify
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
@@ -16,6 +17,9 @@ import sonos
 import account
 
 app = Flask(__name__)
+app.config.update(
+    SECRET_KEY=os.environ['SONOSTOOLS_FLASK_SECRET_KEY']
+)
 
 SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID=os.environ['SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID']
 SONOSTOOLS_MONGODB_CONNECTURI = os.environ['SONOSTOOLS_MONGODB_CONNECTURI']
@@ -33,12 +37,18 @@ def dbClient():
 
 @app.route("/")
 def index():
-    return render_template('index.html', google_auth_client_id=SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID)
+    if session.new or (not 'cookies_accepted' in session):
+        app.logger.info('New session or no cookie set')
+        session['cookies_accepted'] = False
+        session.permanent = True
+    else:
+        app.logger.info('Existing session')
+    return render_template('index.html', cookies_accepted=session['cookies_accepted'], google_auth_client_id=SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID)
 
 @app.route("/receive_google_auth", methods=['POST'])
 def receive_google_auth():
     payload = request.json
-    print(payload)
+    app.logger.info(payload)
     try:
         # Specify the CLIENT_ID of the app that accesses the backend:
         idinfo = id_token.verify_oauth2_token(payload['token'], grequests.Request(), SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID)
@@ -69,7 +79,7 @@ def speak():
             'text': payload['text'],
             'apikey': payload['key']
         })
-    print(r.text)
+    app.logger.info(r.text)
     synResponse = r.json()
     audioConfigHash = synResponse['audioConfigHash']
     fromCache = synResponse['fromCache']
@@ -104,3 +114,11 @@ def sonosLogout():
 @app.route("/privacy", methods=['GET'])
 def privacy():
     return render_template('privacy.html', serviceName="„sonos-tools”")
+
+@app.route("/cookies_accepted", methods=['POST'])
+def cookieAccepted():
+    app.logger.info(request.path)
+    app.logger.info(request.json)
+    session['cookies_accepted'] = True
+    return jsonify({'cookies_accepted': True})
+

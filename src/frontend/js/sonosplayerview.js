@@ -183,6 +183,7 @@ export class SonosPlayerView extends React.Component {
                 <div className="previewPicker">
                     {previewModes.map(mode => <div key={`preview_${mode.name}`} className={`previewPickerEntry ${mode.name == this.state.selectedPreviewMode.name ? "selected" : ""}`} onClick={this.selectPreviewMode.bind(this, mode)}>{mode.name}</div>)}
                 </div>
+                <p className="importantNote"><b>Important!</b> Never share your API key with others.</p>
                 {this.renderPreview(this.state.selectedPreviewMode, this.state)}
             </div>
         </div>)
