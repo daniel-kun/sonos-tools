@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: danielkun/sonos-tools_frontend:v13
+        image: danielkun/sonos-tools_frontend:v14
         ports:
         - containerPort: 5001
           name: http
@@ -47,6 +47,11 @@ spec:
             configMapKeyRef:
               name: secrets
               key: sonos-tools.sonosapi_secret
+        - name: SONOSTOOLS_FLASK_SECRET_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: secrets
+              key: sonos-tools.flask_secret
         - name: SONOSTOOLS_REDIRECT_ROOT 
           valueFrom:
             configMapKeyRef:
