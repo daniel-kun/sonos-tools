@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER="v13"
+VER="v14"
 IMAGE="$SONOSTOOLS_DOCKER_REPO/sonos-tools_frontend:$VER"
 
 docker build -t "$IMAGE" .
