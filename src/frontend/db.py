@@ -8,8 +8,6 @@ def connect(connectUri):
 
 def create_indexes(client):
     db = client['sonos-tools']
-    tokens = db['tokens']
-    tokens.create_indexes([("apiKey", pymongo.ASCENDING)], unique = True)
     accounts = db['accounts']
     accounts.create_indexes([("auth_type", pymongo.ASCENDING), ("userid", pymongo.ASCENDING)], unique = True)
     audioFiles = db['audio-files']
@@ -17,8 +15,8 @@ def create_indexes(client):
 
 def find_apikey(client, apiKey):
     db = client['sonos-tools']
-    tokens = db['accounts']
-    account = tokens.find_one({"sonos.players.apiKey": apiKey})
+    accounts = db['accounts']
+    account = accounts.find_one({"sonos.players.apiKey": apiKey})
     if account == None:
         return None
     return ({
@@ -29,17 +27,20 @@ def find_apikey(client, apiKey):
         "apiKey": apiKey
     })
 
-def update_apikey(client, apiKey, sonosAccessToken, sonosRefreshToken):
+def update_apikey(client, accountid, sonosAccessToken, sonosRefreshToken):
+    print('accountid: {0}, sonosAccessToken: {1}, sonosRefreshToken: {2}'.format(accountid, sonosAccessToken, sonosRefreshToken))
     db = client['sonos-tools']
-    tokens = db['tokens']
-    return tokens.replace_one({
-            "apiKey": apiKey
+    accounts = db['accounts']
+    result = accounts.update_one({
+            '_id': ObjectId(accountid)
         },
         {
-            "apiKey": apiKey,
-            "sonosAccessToken": sonosAccessToken,
-            "sonosRefreshToken": sonosRefreshToken
+            '$set': {
+                'sonos.access_token': sonosAccessToken,
+                'sonos.refresh_token': sonosRefreshToken
+            }
         })
+    return result
 
 def find_account(client, userid):
     db = client['sonos-tools']
