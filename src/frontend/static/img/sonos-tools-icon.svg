@@ -16,9 +16,9 @@
    id="svg5827"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
    sodipodi:docname="sonos-tools-icon.svg"
-   inkscape:export-filename="C:\Projects\sonos-tools\src\frontend\static\img\sonos-tools-icon-48.png"
-   inkscape:export-xdpi="18.007099"
-   inkscape:export-ydpi="18.007099">
+   inkscape:export-filename="C:\Projects\sonos-tools\src\frontend\static\img\sonos-tools-icon-256.png"
+   inkscape:export-xdpi="94.237679"
+   inkscape:export-ydpi="94.237679">
   <link
      href="https://fonts.googleapis.com/css?family=M+PLUS+1p"
      rel="stylesheet" />
@@ -68,8 +68,8 @@
     <path
        inkscape:connector-curvature="0"
        id="rect863-6"
-       style="fill:#fffafa;fill-opacity:0.68627451;stroke:none;stroke-width:0.80000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 21.90307,214.48127 c 0.0044,-11.11363 0.0088,-22.22725 0.0816,-33.92246 1.649714,-3.57693 4.910732,-5.15898 7.759498,-6.72734 3.250013,-1.54415 6.703018,-3.02844 10.346006,-3.18755 5.58156,0.12839 10.83039,2.76493 15.2333,6.03899 1.404226,1.26879 3.771059,2.83586 3.148296,4.73903 L 58.55,214.20297 m 0,1e-5 c -0.427233,2.49903 -2.719162,4.1418 -4.565465,5.65703 -3.931764,2.84155 -8.563353,4.8944 -13.404385,5.42771 -4.840096,-0.4246 -9.435749,-2.44708 -13.573216,-4.90816 -2.126585,-1.43684 -4.643948,-3.17947 -5.10386,-5.89829"
+       style="fill:#ffffff;fill-opacity:0.68627453;stroke:none;stroke-width:0.80000001;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 6.5572291,209.18957 c 0.0044,-11.11363 0.0088,-22.22725 0.0816,-33.92246 1.6497131,-3.57693 4.9107299,-5.15898 7.7594959,-6.72734 3.250013,-1.54415 6.703018,-3.02844 10.346006,-3.18755 5.58156,0.12839 10.83039,2.76493 15.2333,6.03899 1.404226,1.26879 3.771059,2.83586 3.148296,4.73903 l 0.07823,32.78103 m 0,1e-5 c -0.427233,2.49903 -2.719162,4.1418 -4.565465,5.65703 -3.931764,2.84155 -8.563353,4.8944 -13.404385,5.42771 -4.840096,-0.4246 -9.435749,-2.44708 -13.573216,-4.90816 -2.1265847,-1.43684 -4.6439462,-3.17947 -5.1038579,-5.89829"
        sodipodi:nodetypes="cccccccccccc" />
     <path
        id="rect863"
