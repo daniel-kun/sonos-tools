@@ -46,6 +46,12 @@ div.privacy {
 
 div.bar {
     height: 30pt;
+    color: white;
+    font-size: 10pt;
+}
+
+div.bar a {
+    color: white;
 }
 
 div.top-bar {
@@ -74,16 +80,10 @@ div.bar.bottom a {
 
 div.bar.cookie {
     background-color: black;
-    color: white;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 10pt;
     padding: 0 1em;
-}
-
-div.bar.cookie a {
-    color: white;
 }
 
 div.section-two {
@@ -201,10 +201,6 @@ button.google-logout {
 div.content {
     padding: 30pt;
     padding-bottom: 10pt;
-}
-
-div.bottom a {
-    color: white;
 }
 
 div.bottom a:visited {

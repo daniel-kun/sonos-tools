@@ -8,6 +8,7 @@ from flask import session
 from flask.json import jsonify
 from google.oauth2 import id_token
 from google.auth.transport import requests as grequests
+from datetime import datetime
 import os
 import base64
 import json
@@ -43,7 +44,7 @@ def index():
         session.permanent = True
     else:
         app.logger.info('Existing session')
-    return render_template('index.html', cookies_accepted=session['cookies_accepted'], google_auth_client_id=SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID)
+    return render_template('index.html', cookies_accepted=session['cookies_accepted'], google_auth_client_id=SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID, now=datetime.utcnow())
 
 @app.route("/receive_google_auth", methods=['POST'])
 def receive_google_auth():
@@ -113,7 +114,7 @@ def sonosLogout():
 
 @app.route("/privacy", methods=['GET'])
 def privacy():
-    return render_template('privacy.html', serviceName="„sonos-tools”")
+    return render_template('privacy.html', serviceName="„sonos-tools”", now=datetime.utcnow())
 
 @app.route("/cookies_accepted", methods=['POST'])
 def cookieAccepted():
