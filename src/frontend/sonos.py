@@ -52,16 +52,19 @@ def sonosPlayClip(dbClient, accountid, apiKey, sonosAccessToken, sonosRefreshTok
         print(err)
         raise err
 
-def sonosAuth(dbClient, sonosAuthCode, accountid):
+def sonosAuth(dbClient, sonosAuthCode, accountid, logger):
     postData = {
         "grant_type": "authorization_code",
         "code": sonosAuthCode,
         "redirect_uri": '{0}/sonos_auth'.format(SONOSTOOLS_REDIRECT_ROOT)
     }
-    r = requests.post(
-            'https://api.sonos.com/login/v3/oauth/access',
-            data=postData,
-            auth=(SONOSTOOLS_SONOSAPI_APPKEY, SONOSTOOLS_SONOSAPI_SECRET)).json()
+    url = 'https://api.sonos.com/login/v3/oauth/access'
+    logger.info('Trying {0} with data {1}'.format(url, postData))
+    print('Trying {0} with data {1}'.format(url, postData))
+    request = requests.post( url, data=postData, auth=(SONOSTOOLS_SONOSAPI_APPKEY, SONOSTOOLS_SONOSAPI_SECRET))
+    logger.info('Received status code {0}, body {1}'.format(request.status_code, request.text))
+    print('Received status code {0}, body {1}'.format(request.status_code, request.text))
+    r = request.json()
     sonosAccessToken = r['access_token']
     sonosRefreshToken = r['refresh_token']
     sonosScope = r['scope']

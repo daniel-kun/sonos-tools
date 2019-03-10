@@ -98,7 +98,7 @@ def sonosAuth():
     sonosAuthCode = request.args.get('code')
     stateObj = json.loads(base64.b64decode(request.args.get('state')))
     accountid = stateObj['accountid']
-    sonos.sonosAuth(dbClient(), sonosAuthCode, accountid)
+    sonos.sonosAuth(dbClient(), sonosAuthCode, accountid, app.logger)
     return redirect(url_for('index'))
 
 @app.route("/db_init")
