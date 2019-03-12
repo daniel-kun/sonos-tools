@@ -52,34 +52,40 @@ def check_auth(header, username, password):
 
 @app.route("/login/v3/oauth/access", methods=['POST'])
 def login_v3_oauth_access():
-    # TODO:
-    '''
-    https://api.sonos.com/login/v3/oauth/access
-        headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
-        {
-            "grant_type": "refresh_token",
-            "refresh_token": sonosRefreshToken
-        }
-        ///
-    '''
     r = request.form
     if not 'grant_type' in r:
         return make_response('Invalid request', 400)
 
-    if r['grant_type'] == 'authorization_code':
-        auth = request.headers['Authorization']
-        if not check_auth(auth, 'FAKE_SONOSAPI_APPKEY', 'FAKE_SONOSAPI_SECRET'):
-            return make_response('Wrong username/password'.format(auth), 403)
-        else:
-            return jsonify({
-                'access_code': 'XXX_INITIAL_ACCESS_CODE',
-                'refresh_token': 'XXX_REFRESH_TOKEN',
-                'scope': 'playback-control-all',
-                'expires_in': 300
-            })
-    elif r['grant_type'] == 'refresh_token':
-        return make_response('Not implemented (refresh_token)', 404)
+    auth = request.headers['Authorization']
+    if not check_auth(auth, 'FAKE_SONOSAPI_APPKEY', 'FAKE_SONOSAPI_SECRET'):
+        return make_response('Wrong username/password'.format(auth), 401)
     else:
-        return make_response('Invalid grant_type', 400)
-
+        if r['grant_type'] == 'authorization_code':
+            if 'code' and 'redirect_uri':
+                if r['code'] != "XXX_AUTH_CODE":
+                    return make_response('Invalid code', 400)
+                if r['redirect_uri'] != 'https://valid.url':
+                    return make_response('Invalid redirect_uri', 400)
+                else:
+                    return jsonify({
+                        'access_code': 'XXX_INITIAL_ACCESS_CODE',
+                        'refresh_token': 'XXX_REFRESH_TOKEN',
+                        'scope': 'playback-control-all',
+                        'expires_in': 300
+                    })
+            else:
+                return make_response('Missing code or redirect_uri for request with grant_type "authorization_code"', 400)
+        elif r['grant_type'] == 'refresh_token':
+            if not 'refresh_token' in r:
+                return make_response('Missing refresh_token for request with grant_type "refresh_token"', 400)
+            else:
+                if r['refresh_token'] == 'XXX_REFRESH_TOKEN':
+                    return jsonify({
+                            'access_code': 'XXX_REFRESHED_ACCESS_CODE',
+                            'refresh_token': 'XXX_REFRESH_TOKEN'
+                        })
+                else:
+                    return make_response('Invalid refresh_token', 400)
+        else:
+            return make_response('Invalid grant_type', 400)
 
