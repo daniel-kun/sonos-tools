@@ -32,8 +32,6 @@ https://api.sonos.com/login/v3/oauth/access
         "redirect_uri": '{0}/sonos_auth'.format(SONOSTOOLS_REDIRECT_ROOT)
     }
 
-https://api.ws.sonos.com/control/api/v1/households
-    headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
 
 https://api.ws.sonos.com/control/api/v1/households/{0}/groups
     headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
@@ -50,6 +48,62 @@ def check_auth(header, username, password):
     else:
         return False
 
+def get_bearer_token(header):
+    if header.startswith('Bearer '):
+        return header[len('Bearer '):]
+    else:
+        return "";
+
+
+'''
+https://api.ws.sonos.com/control/api/v1/households
+    headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
+'''
+@app.route("/control/api/v1/households", methods=["GET"])
+def control_api_v1_houesholds():
+    token = get_bearer_token(request.headers['Authorization'])
+    if token == "XXX_TOKEN_NO_HOUSEHOLDS":
+        return jsonify({
+            "households": []})
+    elif token == "XXX_TOKEN_ONE_HOUSEHOLD":
+        return jsonify({
+            "households": [
+                    {
+                        "id": "XXX_HOUSEHOLD_1",
+                    }
+                ]})
+    elif token == "XXX_TOKEN_TWO_HOUSEHOLDs":
+        return jsonify({
+            "households": [
+                    {
+                        "id": "XXX_HOUSEHOLD_1",
+                    },
+                    {
+                        "id": "XXX_HOUSEHOLD_2",
+                    },
+                ]})
+    elif token == "XXX_TOKEN_MANY_HOUSEHOLDS":
+        return jsonify({
+            "households": [
+                    {
+                        "id": "XXX_HOUSEHOLD_1",
+                    },
+                    {
+                        "id": "XXX_HOUSEHOLD_2",
+                    },
+                    {
+                        "id": "XXX_HOUSEHOLD_3",
+                    },
+                    {
+                        "id": "XXX_HOUSEHOLD_4",
+                    },
+                    {
+                        "id": "XXX_HOUSEHOLD_5",
+                    },
+                ]})
+    else:
+        return make_response('Invalid access_token', 401)
+
 @app.route("/login/v3/oauth/access", methods=['POST'])
 def login_v3_oauth_access():
     r = request.form
@@ -58,7 +112,7 @@ def login_v3_oauth_access():
 
     auth = request.headers['Authorization']
     if not check_auth(auth, 'FAKE_SONOSAPI_APPKEY', 'FAKE_SONOSAPI_SECRET'):
-        return make_response('Wrong username/password'.format(auth), 401)
+        return make_response('Wrong username/password', 401)
     else:
         if r['grant_type'] == 'authorization_code':
             if 'code' and 'redirect_uri':
