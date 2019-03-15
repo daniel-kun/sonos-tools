@@ -27,6 +27,8 @@ SONOSTOOLS_MONGODB_CONNECTURI = os.environ['SONOSTOOLS_MONGODB_CONNECTURI']
 SONOSTOOLS_API_TTS_ROOT = os.environ['SONOSTOOLS_API_TTS_ROOT']
 SONOSTOOLS_SONOSAPI_APPKEY = os.environ['SONOSTOOLS_SONOSAPI_APPKEY']
 SONOSTOOLS_SONOSAPI_SECRET = os.environ['SONOSTOOLS_SONOSAPI_SECRET']
+SONOSTOOLS_SONOSAPI_ENDPOINT = os.environ['SONOSTOOLS_SONOSAPI_ENDPOINT']
+SONOSTOOLS_DEVENV = os.environ['SONOSTOOLS_ENV'] == "DEVELOPMENT"
 
 _dbClient = None
 
@@ -44,25 +46,45 @@ def index():
         session.permanent = True
     else:
         app.logger.info('Existing session')
-    return render_template('index.html', cookies_accepted=session['cookies_accepted'], google_auth_client_id=SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID, now=datetime.utcnow())
+    return render_template(
+            'index.html',
+            cookies_accepted=session['cookies_accepted'],
+            google_auth_client_id=SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID,
+            now=datetime.utcnow(),
+            devenv="true" if SONOSTOOLS_DEVENV else "false",
+            sonos_api_endpoint=SONOSTOOLS_SONOSAPI_ENDPOINT)
+
+def fake_receive_google_auth(payload):
+    if payload['token'] == "XXX_GOOGLE_ID_TOKEN":
+        return jsonify(account.find_account_by_google_user_id(dbClient(), {
+            "sub": "XXX_GOOGLE_ACCOUNT_SUB",
+            "email": "XXX_GOOGLE_ACCOUNT_EMAIL@gmail.com",
+            "name": "XXX_GOOGLE_ACCOUNT_NAME Lastname",
+            "picture": "XXX_GOOGLE_ACCOUNT_PICTURE"
+            }))
+    else:
+        return make_response('Invalid token', 401)
 
 @app.route("/receive_google_auth", methods=['POST'])
 def receive_google_auth():
     payload = request.json
     app.logger.info(payload)
-    try:
-        # Specify the CLIENT_ID of the app that accesses the backend:
-        idinfo = id_token.verify_oauth2_token(payload['token'], grequests.Request(), SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID)
+    if SONOSTOOLS_DEVENV:
+        return fake_receive_google_auth(payload)
+    else:
+        try:
+            # Specify the CLIENT_ID of the app that accesses the backend:
+            idinfo = id_token.verify_oauth2_token(payload['token'], grequests.Request(), SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID)
 
-        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
-            raise ValueError('Wrong issuer.')
+            if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+                raise ValueError('Wrong issuer.')
 
-        # ID token is valid. Get the user's Google Account ID from the decoded token.
-        return jsonify(account.find_account_by_google_user_id(dbClient(), idinfo))
+            # ID token is valid. Get the user's Google Account ID from the decoded token.
+            return jsonify(account.find_account_by_google_user_id(dbClient(), idinfo))
 
-    except ValueError:
-        return make_response('Invalid token', 401)
-    return make_response('Success', 200)
+        except ValueError:
+            return make_response('Invalid token', 401)
+        return make_response('Success', 200)
 
 @app.route("/api/v1/speak", methods=['POST'])
 def speak():

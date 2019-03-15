@@ -10,6 +10,8 @@ kubectl create configmap secrets \
     --from-literal=sonos-tools.sonosapi_appkey=$SONOSTOOLS_SONOSAPI_APPKEY \
     --from-literal=sonos-tools.sonosapi_secret=$SONOSTOOLS_SONOSAPI_SECRET \
     --from-literal=sonos-tools.flask_secret="$SONOSTOOLS_FLASK_SECRET_KEY" \
+    --from-literal=sonos-tools.sonos-api-endpoint="$SONOSTOOLS_SONOSAPI_ENDPOINT" \
+    --from-literal=sonos-tools.sonos-api-endpoint-ws="$SONOSTOOLS_SONOSAPI_ENDPOINT_WS" \
 
 kubectl delete configmap/secret-google-auth-clientfile
 kubectl create configmap secret-google-auth-clientfile --from-file=$SONOSTOOLS_GOOGLE_AUTH_CLIENTFILE

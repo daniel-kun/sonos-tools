@@ -1,5 +1,7 @@
 import { GoogleLogin } from 'react-google-login';
 import { GoogleLogout } from 'react-google-login';
+import { FakeGoogleLogin } from './fake-google-login.jsx';
+import { FakeGoogleLogout } from './fake-google-login.jsx';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {SonosPlayerView} from './sonosplayerview.js';
@@ -37,6 +39,28 @@ function responseGoogleLogin(googleUser)
     });
 }
 
+function fakeResponseGoogleLogin(googleUser)
+{
+    console.log("fakeResponseGoogleLogin")
+    fetch("/receive_google_auth", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({"token": "XXX_GOOGLE_ID_TOKEN"}),
+    })
+    .then(response => response.json())
+    .then(json => {
+        console.log(json)
+        if ("sonos" in json) {
+            renderRoot(json, true, json['sonosApiAppKey'], json['redirectUriRoot'])
+        } else {
+            renderRoot(json, false, json['sonosApiAppKey'], json['redirectUriRoot'])
+        }
+    });
+}
+
 function responseGoogleFailure(error)
 {
     console.log(error);
@@ -49,10 +73,11 @@ function responseGoogleLogout()
 
 function createSonosAuthUri(clientId, accountid, redirectUri)
 {
+    var sonosApiEndpoint = window.sonosToolsSonosApiEndpoint
     var state = window.btoa(JSON.stringify({
                 'accountid': accountid
         }))
-    return `https://api.sonos.com/login/v3/oauth?client_id=${clientId}&response_type=code&state=${state}&scope=playback-control-all&redirect_uri=${redirectUri}`
+    return `${sonosApiEndpoint}/login/v3/oauth?client_id=${clientId}&response_type=code&state=${state}&scope=playback-control-all&redirect_uri=${redirectUri}`
 }
 
 function sonosLogout(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
@@ -83,11 +108,12 @@ function renderLanding()
             <img className="speaker-left" src="/static/img/sonos-bubble-left.svg"/>
             <img className="speaker-right" src="/static/img/sonos-bubble-right.svg"/>
             
-            <GoogleLogin 
+            {!window.sonosToolsIsDevEnv && <GoogleLogin 
                 clientId="166334197578-sem3ib4jfiqm8k59npc1s3ddrro5f5bs.apps.googleusercontent.com"
                 isSignedIn={true}
                 onSuccess={responseGoogleLogin}
-                onFailure={responseGoogleFailure}/>
+                onFailure={responseGoogleFailure}/>}
+            {window.sonosToolsIsDevEnv && <FakeGoogleLogin onSuccess={fakeResponseGoogleLogin}/>}
         </div>)
 }
 
@@ -134,6 +160,9 @@ function render(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
     else if (isGoogleSignedIn && isSonosSignedIn)
         return renderLoggedIn(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
 }
+
+window.sonosToolsIsDevEnv = document.getElementById('sonostools-entrypoint').getAttribute('data-sonostools_devenv')
+window.sonosToolsSonosApiEndpoint = document.getElementById('sonostools-entrypoint').getAttribute('data-sonostools_sonos_api_endpoint')
 
 renderRoot(null, false)
 

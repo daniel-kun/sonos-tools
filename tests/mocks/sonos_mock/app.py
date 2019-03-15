@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import make_response
 from flask import request
+from flask import redirect
 from flask import jsonify
 from base64 import b64encode
 from base64 import b64decode
@@ -50,7 +51,7 @@ def control_api_v1_households_groups(householdId):
             })
         else:
             return jsonify({"errorCode": "ERROR_RESOURCE_GONE"}, 410)
-    elif token == "XXX_TOKEN_TWO_HOUSEHOLDs":
+    elif token == "XXX_TOKEN_TWO_HOUSEHOLDS":
         if householdId == "XXX_HOUSEHOLD_TWO_1":
             return jsonify({
                 "players": [
@@ -65,14 +66,23 @@ def control_api_v1_households_groups(householdId):
                     }
                 ]
             })
-        elif: householdId == "XXX_HOUSEHOLD_TWO_2":
+        elif householdId == "XXX_HOUSEHOLD_TWO_2":
             return jsonify({
                 "players": [
                     {
-                        "id": "RINCON_10002",
-                        "name": "Wohnzimmer",
+                        "id": "RINCON_10021",
+                        "name": "Lounge",
                         "capabilities": [
                             "AIRPLAY",
+                            "CLOUD",
+                        ]
+                    },
+                    {
+                        "id": "RINCON_10022",
+                        "name": "Badezimmer",
+                        "capabilities": [
+                            "AIRPLAY",
+                            "AUDIO_CLIP",
                             "CLOUD",
                         ]
                     }
@@ -81,12 +91,20 @@ def control_api_v1_households_groups(householdId):
         else:
             return jsonify({"errorCode": "ERROR_RESOURCE_GONE"}, 410)
     elif token == "XXX_TOKEN_MANY_HOUSEHOLDS":
-        pass # TODO
-             # "id": "XXX_HOUSEHOLD_MANY_1",
-             # "id": "XXX_HOUSEHOLD_MANY_2",
-             # "id": "XXX_HOUSEHOLD_MANY_3",
-             # "id": "XXX_HOUSEHOLD_MANY_4",
-             # "id": "XXX_HOUSEHOLD_MANY_5",
+        for i in range(1, 5 + 1):
+            if householdId == "XXX_HOUSEHOLD_MANY_{0}".format(i):
+                return jsonify({
+                    "players": [{
+                            "id": "RINCON_1000{0}".format(x),
+                            "name": "Player {0} in Household {1}".format(x, i),
+                            "capabilities": [
+                                "AIRPLAY",
+                                "AUDIO_CLIP" if x % 2 == 0 else "EMPTY",
+                                "CLOUD",
+                            ]
+                        } for x in range(1, (i * 2) + 1)]
+                    })
+        return jsonify({"errorCode": "ERROR_RESOURCE_GONE"}, 410)
     else:
         return make_response('Invalid access_token', 401)
 
@@ -106,7 +124,7 @@ def control_api_v1_houesholds():
                         "id": "XXX_HOUSEHOLD_ONE_1",
                     }
                 ]})
-    elif token == "XXX_TOKEN_TWO_HOUSEHOLDs":
+    elif token == "XXX_TOKEN_TWO_HOUSEHOLDS":
         return jsonify({
             "households": [
                     {
@@ -149,6 +167,24 @@ def check_auth(header, username, password):
     else:
         return False
 
+'''
+http://localhost:5001/login/v3/oauth?client_id=XXX_SONOS_APPKEY&response_type=code&state=CRYPTICSTATE==&scope=playback-control-all&redirect_uri=http://localhost:5001/sonos_auth
+'''
+@app.route("/login/v3/oauth", methods=['GET'])
+def login_v3_oauth():
+    args = request.args
+    if 'client_id' in args and 'response_type' in args and args['response_type'] == 'code' and 'state' in args and 'scope' in args and 'redirect_uri' in args:
+        if args['client_id'] != "XXX_SONOS_APPKEY":
+            return make_response('Invalid client_id', 400)
+        elif args['scope'] != 'playback-control-all':
+            return make_response('Invalid scope', 400)
+        elif not args['redirect_uri'].startswith('http://localhost'):
+            return make_response('Invalid redirect_uri', 400)
+        else:
+            return redirect('{0}?code={1}&state={2}'.format(args['redirect_uri'], 'XXX_AUTH_CODE', args['state']))
+    else:
+        return make_response('Invalid request', 400)
+
 @app.route("/login/v3/oauth/access", methods=['POST'])
 def login_v3_oauth_access():
     r = request.form
@@ -156,18 +192,18 @@ def login_v3_oauth_access():
         return make_response('Invalid request', 400)
 
     auth = request.headers['Authorization']
-    if not check_auth(auth, 'FAKE_SONOSAPI_APPKEY', 'FAKE_SONOSAPI_SECRET'):
+    if not check_auth(auth, 'XXX_SONOS_APPKEY', 'XXX_SONOS_SECRET'):
         return make_response('Wrong username/password', 401)
     else:
         if r['grant_type'] == 'authorization_code':
             if 'code' and 'redirect_uri':
                 if r['code'] != "XXX_AUTH_CODE":
                     return make_response('Invalid code', 400)
-                if r['redirect_uri'] != 'https://valid.url':
+                if not r['redirect_uri'].startswith("http://localhost"):
                     return make_response('Invalid redirect_uri', 400)
                 else:
                     return jsonify({
-                        'access_code': 'XXX_INITIAL_ACCESS_CODE',
+                        'access_token': 'XXX_TOKEN_TWO_HOUSEHOLDS',
                         'refresh_token': 'XXX_REFRESH_TOKEN',
                         'scope': 'playback-control-all',
                         'expires_in': 300
