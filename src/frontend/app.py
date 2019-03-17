@@ -56,14 +56,28 @@ def index():
 
 def fake_receive_google_auth(payload):
     if payload['token'] == "XXX_GOOGLE_ID_TOKEN":
-        return jsonify(account.find_account_by_google_user_id(dbClient(), {
+        acc = account.find_account_by_google_user_id(dbClient(), {
             "sub": "XXX_GOOGLE_ACCOUNT_SUB",
             "email": "XXX_GOOGLE_ACCOUNT_EMAIL@gmail.com",
             "name": "XXX_GOOGLE_ACCOUNT_NAME Lastname",
             "picture": "XXX_GOOGLE_ACCOUNT_PICTURE"
-            }))
+            })
+        session['accountid'] = acc ['accountid']
+        return jsonify(acc)
     else:
         return make_response('Invalid token', 401)
+
+@app.route("/check_auth", methods=['GET'])
+def check_auth():
+    if 'accountid' in session:
+        return jsonify(account.find_account_by_id(dbClient(), session['accountid']))
+    else:
+        return jsonify({"not_logged_in": True})
+
+@app.route("/logout", methods=['POST'])
+def logout():
+    del session['accountid']
+    return jsonify({'success': True})
 
 @app.route("/receive_google_auth", methods=['POST'])
 def receive_google_auth():
@@ -80,6 +94,7 @@ def receive_google_auth():
                 raise ValueError('Wrong issuer.')
 
             # ID token is valid. Get the user's Google Account ID from the decoded token.
+            session['accountid'] = account['accountid']
             return jsonify(account.find_account_by_google_user_id(dbClient(), idinfo))
 
         except ValueError:

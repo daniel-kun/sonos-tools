@@ -68,6 +68,11 @@ function responseGoogleFailure(error)
 
 function responseGoogleLogout()
 {
+    fetch("/logout", {
+        method: 'POST',
+        cache: 'no-cache',
+        credentials: 'include'
+    })
     renderRoot(null, false);
 }
 
@@ -129,7 +134,8 @@ home automation.</p>
             <img className="speaker-right" src="/static/img/sonos-bubble-right.svg"/>
             
             <p className="connect-sonos"><button className="sonos connect" onClick={() => { location.href = createSonosAuthUri(sonosApiAppKey, accountid, redirectUriRoot + "/sonos_auth") }}>Connect with SONOS</button></p>
-            <GoogleLogout className="google-logout" onLogoutSuccess={responseGoogleLogout}/>
+            {!window.sonosToolsIsDevEnv && <GoogleLogout className="google-logout" onLogoutSuccess={responseGoogleLogout}/>}
+            {window.sonosToolsIsDevEnv && <FakeGoogleLogout onLogoutSuccess={responseGoogleLogout}/>}
         </div>)
 }
 
@@ -143,7 +149,8 @@ function renderLoggedIn(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoo
             {account.sonos.players.length == 1 && <span>We have found 1 player.<br/>Try it out now.</span>}
             {account.sonos.players.length > 1 && <span>We have found {account.sonos.players.length} players.<br/>Try them out now.</span>}
             <SonosPlayerView players={account.sonos.players}/>
-            <GoogleLogout className="google-logout" onLogoutSuccess={responseGoogleLogout}/>
+            {!window.sonosToolsIsDevEnv && <GoogleLogout className="google-logout" onLogoutSuccess={responseGoogleLogout}/>}
+            {window.sonosToolsIsDevEnv && <FakeGoogleLogout onLogoutSuccess={responseGoogleLogout}/>}
             <a className="unlink" href="#" onClick={sonosLogout.bind(null, account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)}>Unlink this Sonos account</a>
         </div>)
 }
@@ -164,5 +171,28 @@ function render(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
 window.sonosToolsIsDevEnv = document.getElementById('sonostools-entrypoint').getAttribute('data-sonostools_devenv')
 window.sonosToolsSonosApiEndpoint = document.getElementById('sonostools-entrypoint').getAttribute('data-sonostools_sonos_api_endpoint')
 
-renderRoot(null, false)
+fetch("/check_auth", {
+    credentials: 'include',
+    cache: 'no-cache'
+})
+    .then(response => {
+        console.log(response)
+        if (response.status == 200) {
+            response.json().then(account => {
+                renderRoot(account, "sonos" in account, account["sonosApiAppKey"], account["redirectUriRoot"])
+            }).catch(err => {
+                console.log('check_auth - catched when parsing json-response')
+                console.log(err)
+                renderRoot(null, false)
+            })
+        } else {
+            console.log(`check_auth - non-200 status code: ${response.status}`)
+            renderRoot(null, false)
+        }
+    })
+    .catch(err => {
+        console.log('check_auth - catched when fetching request')
+        console.log(err)
+        renderRoot(null, false)
+    })
 
