@@ -1,0 +1,10 @@
+screen sh -c "cd src/frontend/js && npm run watch"
+split
+focus down
+screen sh -c "cd tests/mocks/sonos_mock && flask run -p 5500"
+split
+focus down
+screen sh -c "cd src/api.tts && flask run -p 5001"
+split
+focus down
+screen sh -c "cd src/frontend && flask run -p 5000"
