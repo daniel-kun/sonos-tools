@@ -13,7 +13,7 @@ SONOSTOOLS_SONOSAPI_ENDPOINT = os.environ['SONOSTOOLS_SONOSAPI_ENDPOINT']
 SONOSTOOLS_SONOSAPI_ENDPOINT_WS = os.environ['SONOSTOOLS_SONOSAPI_ENDPOINT_WS']
 SONOSTOOLS_REDIRECT_ROOT = os.environ['SONOSTOOLS_REDIRECT_ROOT']
 
-def sonosPlayClip(dbClient, accountid, apiKey, sonosAccessToken, sonosRefreshToken, playerId, uri):
+def sonosPlayClip(dbClient, accountid, apiKey, sonosAccessToken, sonosRefreshToken, playerId, uri, logger):
     try:
         headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
         body = {
@@ -21,9 +21,10 @@ def sonosPlayClip(dbClient, accountid, apiKey, sonosAccessToken, sonosRefreshTok
             "appId": "com.acme.com",
             "streamUrl": uri 
         }
-        request = requests.post("{0}/control/api/v1/players/{1}/audioClip".format(SONOSTOOLS_SONOSAPI_ENDPOINT_WS, playerId),
-                headers=headers,
-                json=body)
+        url = "{0}/control/api/v1/players/{1}/audioClip".format(SONOSTOOLS_SONOSAPI_ENDPOINT_WS, playerId)
+        logger.info('Making clip request to "{0}"\nHeaders: {1}\nBody: {2}'.format(url, headers, body))
+        request = requests.post(url, headers=headers, json=body)
+        logger.info('Response: {0}\n{1}'.format(request.status_code, request.text))
         if request.status_code == 401:
             print("Sonos API token not valid, trying to refresh")
             refreshRequest = requests.post("{0}/login/v3/oauth/access".format(SONOSTOOLS_SONOSAPI_ENDPOINT), headers=headers, data={

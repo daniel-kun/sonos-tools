@@ -94,8 +94,9 @@ def receive_google_auth():
                 raise ValueError('Wrong issuer.')
 
             # ID token is valid. Get the user's Google Account ID from the decoded token.
-            session['accountid'] = account['accountid']
-            return jsonify(account.find_account_by_google_user_id(dbClient(), idinfo))
+            acc = account.find_account_by_google_user_id(dbClient(), idinfo)
+            session['accountid'] = acc['accountid']
+            return jsonify(acc)
 
         except ValueError:
             return make_response('Invalid token', 401)
@@ -111,18 +112,20 @@ def speak():
     if apiKeyDoc == None:
         raise Exception('Invalid "key"')
 
-    r = requests.post("{0}/api/v1/synthesize".format(SONOSTOOLS_API_TTS_ROOT), 
-        json={
+    synthUrl = "{0}/api/v1/synthesize".format(SONOSTOOLS_API_TTS_ROOT)
+    synthBody = {
             'languagecode': payload['languagecode'],
             'text': payload['text'],
             'apikey': payload['key']
-        })
-    app.logger.info(r.text)
+        }
+    app.logger.info('Making synthesize request to "{0}" with content "{1}"'.format(synthUrl, synthBody))
+    r = requests.post(synthUrl, json=synthBody)
+    app.logger.info('Response: {0}\n{1}'.format(r.status_code, r.text))
     synResponse = r.json()
     audioConfigHash = synResponse['audioConfigHash']
     fromCache = synResponse['fromCache']
     uri = synResponse['uri']
-    result = sonos.sonosPlayClip(dbClient(), apiKeyDoc['accountid'], apiKeyDoc['apiKey'], apiKeyDoc['access_token'], apiKeyDoc['refresh_token'], apiKeyDoc['playerId'], uri)
+    result = sonos.sonosPlayClip(dbClient(), apiKeyDoc['accountid'], apiKeyDoc['apiKey'], apiKeyDoc['access_token'], apiKeyDoc['refresh_token'], apiKeyDoc['playerId'], uri, app.logger)
     if result.status_code == 200:
         if fromCache:
             return make_response("Roger, playing sound (from cache)", 200)
