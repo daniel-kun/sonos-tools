@@ -168,7 +168,7 @@ function render(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
         return renderLoggedIn(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)
 }
 
-window.sonosToolsIsDevEnv = document.getElementById('sonostools-entrypoint').getAttribute('data-sonostools_devenv')
+window.sonosToolsIsDevEnv = document.getElementById('sonostools-entrypoint').getAttribute('data-sonostools_devenv') == "true"
 window.sonosToolsSonosApiEndpoint = document.getElementById('sonostools-entrypoint').getAttribute('data-sonostools_sonos_api_endpoint')
 
 fetch("/check_auth", {
