@@ -2,8 +2,7 @@
 
 source ~/.sonostools-dev.env
 
-helm install charts/sonos-tools \
-    --set Env="${SONOSTOOLS_ENV}" \
+args=( --set Env="${SONOSTOOLS_ENV}" \
     --set ClusterPublicIP="${SONOSTOOLS_CLUSTER_PUBLIC_IP}" \
     --set ClusterPublicRoot="${SONOSTOOLS_CLUSTER_PUBLIC_ROOT}" \
     --set DockerRepo="${SONOSTOOLS_DOCKER_REPO}" \
@@ -19,5 +18,10 @@ helm install charts/sonos-tools \
     --set SonosApiAppSecret="${SONOSTOOLS_SONOSAPI_SECRET}" \
     --set-file TlsCert="${SONOSTOOLS_TLS_CERTFILE}"  \
     --set-file TlsKey="${SONOSTOOLS_TLS_PRIVKEY}" \
-;
+    );
+
+helm list | grep sonos-tools && \
+    helm upgrade sonos-tools-dev charts/sonos-tools "${args[@]}" || \
+    helm install charts/sonos-tools --name sonos-tools-dev "${args[@]}" 
+
 
