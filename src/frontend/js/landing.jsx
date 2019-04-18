@@ -72,8 +72,9 @@ function responseGoogleLogout()
         method: 'POST',
         cache: 'no-cache',
         credentials: 'include'
+    }).then(r => {
+        renderRoot(null, false);
     })
-    renderRoot(null, false);
 }
 
 function createSonosAuthUri(clientId, accountid, redirectUri)
@@ -134,7 +135,10 @@ home automation.</p>
             <img className="speaker-right" src="/static/img/sonos-bubble-right.svg"/>
             
             <p className="connect-sonos"><button className="sonos connect" onClick={() => { location.href = createSonosAuthUri(sonosApiAppKey, accountid, redirectUriRoot + "/sonos_auth") }}>Connect with SONOS</button></p>
-            {!window.sonosToolsIsDevEnv && <GoogleLogout className="google-logout" onLogoutSuccess={responseGoogleLogout}/>}
+            {!window.sonosToolsIsDevEnv && <GoogleLogout 
+                clientId="166334197578-sem3ib4jfiqm8k59npc1s3ddrro5f5bs.apps.googleusercontent.com"
+                className="google-logout"
+                onLogoutSuccess={responseGoogleLogout}/>}
             {window.sonosToolsIsDevEnv && <FakeGoogleLogout onLogoutSuccess={responseGoogleLogout}/>}
         </div>)
 }
@@ -149,7 +153,10 @@ function renderLoggedIn(account, isSonosSignedIn, sonosApiAppKey, redirectUriRoo
             {account.sonos.players.length == 1 && <span>We have found 1 player.<br/>Try it out now.</span>}
             {account.sonos.players.length > 1 && <span>We have found {account.sonos.players.length} players.<br/>Try them out now.</span>}
             <SonosPlayerView players={account.sonos.players}/>
-            {!window.sonosToolsIsDevEnv && <GoogleLogout className="google-logout" onLogoutSuccess={responseGoogleLogout}/>}
+            {!window.sonosToolsIsDevEnv && <GoogleLogout
+                clientId="166334197578-sem3ib4jfiqm8k59npc1s3ddrro5f5bs.apps.googleusercontent.com"
+                className="google-logout"
+                onLogoutSuccess={responseGoogleLogout}/>}
             {window.sonosToolsIsDevEnv && <FakeGoogleLogout onLogoutSuccess={responseGoogleLogout}/>}
             <a className="unlink" href="#" onClick={sonosLogout.bind(null, account, isSonosSignedIn, sonosApiAppKey, redirectUriRoot)}>Unlink this Sonos account</a>
         </div>)

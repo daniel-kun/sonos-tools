@@ -1,5 +1,5 @@
-ImageVer_Frontend: 23
-ImageVer_ApiTts: 3
+ImageVer_Frontend: 25
+ImageVer_ApiTts: 4
 ## Default values for sonos-tools.
 ## This is a YAML-formatted file.
 ## Declare variables to be passed into your templates.

@@ -3,11 +3,13 @@
 if [ -z "$SONOSTOOLS_GCP_API_KEY" ]
 then
     echo "Error: env var \$SONOSTOOLS_GCP_API_KEY is not set."
+    exit 1
 fi
 
 if [ -z "$SONOSTOOLS_MONGODB_CONNECTURI" ]
 then
     echo "Error: env var \$SONOSTOOLS_MONGODB_CONNECTURI is not set."
+    exit 1
 fi
 
 if [ "$1" != "--skip" ]
