@@ -1,0 +1,40 @@
+sonos-tools Environment: {{ required "Please specify an environment for this instance in value Env: DEVELOPMENT, STAGING, PRODUCTION" .Values.Env }}
+
+Cluster public IP: {{ required "Please set value ClusterPublicIP. A valid public cluster IP is required - currently sonos-tools only supports ExternalIP ingress" .Values.ClusterPublicIP }}
+
+Cluster public root (url schema + domain name): {{ required "Please set value ClusterPublicRoot to the full domain to the root of your cluster, e.g. https://example.com. " .Values.ClusterPublicRoot }}
+
+Used docker repo: {{ required "Please specify a docker repository via value DockerRepo" .Values.DockerRepo }}
+
+Docker image prefix (dev/staging/prod): {{ required "Please specify a docker image prefix via DockerImagePrefix. Common prefixes are dev, staging or prod." .Values.DockerImagePrefix }}
+
+Flask secret: {{ required "Please specify some random bytes as a Flask secret as value FlaskSecret" .Values.FlaskSecret }}
+
+Google Cloud Platform API Key: {{ required "Please specify a Google Cloud Platform API Key as value GcpApiKey" .Values.GcpApiKey }}
+
+Google Auth Client ID: {{ required "Please specify a Google Auth Client ID as value GoogleAuthClientId" .Values.GoogleAuthClientId }}
+
+MongoDB Connect URI: {{ required "Please specify a MongoDB Connect URI as value MongoDBConnectUri" .Values.MongoDBConnectUri }}
+
+The public redirect root that is used to build the redirect URI for the Sonos OAuth flow: {{ required "Please specify your root domain (e.g. https://example.com) as value RedirectRoot" .Values.RedirectRoot }}
+
+Sonos API Endpoint: {{ required "Please specify the Sonos API endpoint as value SonosApiEndpoint (default: https://api.sonos.com)" .Values.SonosApiEndpoint }}
+
+Sonos API WS-Endpoint: {{ required "Please specify the Sonos API WS-endpoint as value SonosApiEndpointWS (default: https://api.ws.sonos.com)" .Values.SonosApiEndpointWS }}
+
+Sonos API App Key: {{ required "Please specify your Sonos API App Key as value SonosApiAppKey" .Values.SonosApiAppKey }}
+
+Sonos API App Secret: {{ required "Please specify your Sonos API App Secret as value SonosApiAppSecret" .Values.SonosApiAppSecret }}
+
+{{- if .Values.TlsCert }}
+{{ printf "A TLS certificate has been provided" }}
+{{- else }}
+{{ required "No TLS certificate is provided as value TlsCert, please provide a TLS certificate for HTTPS traffic." .Values.TlsCert }}
+{{- end }}
+
+{{- if .Values.TlsKey }}
+{{ printf "A TLS key has been provided" }}
+{{- else }}
+{{ required "No TLS key is provided as value TlsKey, please provide a TLS key for your TLS certificate." .Values.TlsKey }}
+{{- end }}
+

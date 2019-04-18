@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: api-tts
-        image: danielkun/sonos-tools_api.tts:v3
+        image: {{.Values.DockerRepo}}/sonos-tools-{{.Values.DockerImagePrefix}}_api.tts:v{{.Values.ImageVer_ApiTts}}
         ports:
         - containerPort: 5000
           name: http

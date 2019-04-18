@@ -18,15 +18,18 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: danielkun/sonos-tools_frontend:v21
+        image: {{.Values.DockerRepo}}/sonos-tools-{{.Values.DockerImagePrefix}}_frontend:v{{.Values.ImageVer_Frontend}}
         ports:
         - containerPort: 5001
           name: http
         env:
+        - name: SONOSTOOLS_ENV
+          valueFrom:
+              configMapKeyRef:
+                  name: secrets
+                  key: sonos-tools.env
         - name: SONOSTOOLS_API_TTS_ROOT
           value: http://api-tts:5000
-        - name: SONOSTOOLS_SONOSAPI_PLAYERID
-          value: RINCON_7828CAB3AC9801400
         - name: SONOSTOOLS_GOOGLE_AUTH_CLIENT_ID
           valueFrom:
             configMapKeyRef:
@@ -57,6 +60,16 @@ spec:
             configMapKeyRef:
               name: secrets
               key: sonos-tools.redirect_root
+        - name: SONOSTOOLS_SONOSAPI_ENDPOINT
+          valueFrom:
+              configMapKeyRef:
+                  name: secrets
+                  key: sonos-tools.sonos-api-endpoint
+        - name: SONOSTOOLS_SONOSAPI_ENDPOINT_WS
+          valueFrom:
+              configMapKeyRef:
+                  name: secrets
+                  key: sonos-tools.sonos-api-endpoint-ws
 ---
 apiVersion: v1
 kind: Service

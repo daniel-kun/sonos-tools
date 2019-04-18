@@ -8,7 +8,7 @@ metadata:
 spec:
   type: LoadBalancer
   externalIPs:
-  - 116.202.2.24
+  - {{.Values.ClusterPublicIP}}
   ports:
   - port: 443
     targetPort: 443

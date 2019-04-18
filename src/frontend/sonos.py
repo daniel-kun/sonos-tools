@@ -9,9 +9,11 @@ import requests
 
 SONOSTOOLS_SONOSAPI_APPKEY = os.environ['SONOSTOOLS_SONOSAPI_APPKEY']
 SONOSTOOLS_SONOSAPI_SECRET = os.environ['SONOSTOOLS_SONOSAPI_SECRET']
+SONOSTOOLS_SONOSAPI_ENDPOINT = os.environ['SONOSTOOLS_SONOSAPI_ENDPOINT']
+SONOSTOOLS_SONOSAPI_ENDPOINT_WS = os.environ['SONOSTOOLS_SONOSAPI_ENDPOINT_WS']
 SONOSTOOLS_REDIRECT_ROOT = os.environ['SONOSTOOLS_REDIRECT_ROOT']
 
-def sonosPlayClip(dbClient, accountid, apiKey, sonosAccessToken, sonosRefreshToken, playerId, uri):
+def sonosPlayClip(dbClient, accountid, apiKey, sonosAccessToken, sonosRefreshToken, playerId, uri, logger):
     try:
         headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
         body = {
@@ -19,12 +21,13 @@ def sonosPlayClip(dbClient, accountid, apiKey, sonosAccessToken, sonosRefreshTok
             "appId": "com.acme.com",
             "streamUrl": uri 
         }
-        request = requests.post("https://api.ws.sonos.com/control/api/v1/players/{0}/audioClip".format(playerId),
-                headers=headers,
-                json=body)
+        url = "{0}/control/api/v1/players/{1}/audioClip".format(SONOSTOOLS_SONOSAPI_ENDPOINT_WS, playerId)
+        logger.info('Making clip request to "{0}"\nHeaders: {1}\nBody: {2}'.format(url, headers, body))
+        request = requests.post(url, headers=headers, json=body)
+        logger.info('Response: {0}\n{1}'.format(request.status_code, request.text))
         if request.status_code == 401:
             print("Sonos API token not valid, trying to refresh")
-            refreshRequest = requests.post("https://api.sonos.com/login/v3/oauth/access", headers=headers, data={
+            refreshRequest = requests.post("{0}/login/v3/oauth/access".format(SONOSTOOLS_SONOSAPI_ENDPOINT), headers=headers, data={
                 "grant_type": "refresh_token",
                 "refresh_token": sonosRefreshToken
             },
@@ -39,7 +42,7 @@ def sonosPlayClip(dbClient, accountid, apiKey, sonosAccessToken, sonosRefreshTok
             db.update_apikey(dbClient, accountid, sonosAccessToken, sonosRefreshToken)
             print("Refreshed Sonos API token")
             headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }
-            audioClipRequest = requests.post("https://api.ws.sonos.com/control/api/v1/players/{0}/audioClip".format(playerId),
+            audioClipRequest = requests.post("{0}/control/api/v1/players/{1}/audioClip".format(SONOSTOOLS_SONOSAPI_ENDPOINT_WS, playerId),
                     headers=headers,
                     json=body)
             if audioClipRequest.status_code != 200:
@@ -58,7 +61,7 @@ def sonosAuth(dbClient, sonosAuthCode, accountid, logger):
         "code": sonosAuthCode,
         "redirect_uri": '{0}/sonos_auth'.format(SONOSTOOLS_REDIRECT_ROOT)
     }
-    url = 'https://api.sonos.com/login/v3/oauth/access'
+    url = '{0}/login/v3/oauth/access'.format(SONOSTOOLS_SONOSAPI_ENDPOINT)
     logger.info('Trying {0} with data {1}'.format(url, postData))
     print('Trying {0} with data {1}'.format(url, postData))
     request = requests.post( url, data=postData, auth=(SONOSTOOLS_SONOSAPI_APPKEY, SONOSTOOLS_SONOSAPI_SECRET))
@@ -79,12 +82,12 @@ def sonosAuth(dbClient, sonosAuthCode, accountid, logger):
     })
 
 def sonosListPlayers(sonosAccessToken, sonosRefreshToken):
-    households = requests.get("https://api.ws.sonos.com/control/api/v1/households",
+    households = requests.get("{0}/control/api/v1/households".format(SONOSTOOLS_SONOSAPI_ENDPOINT_WS),
         headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }).json()
     playerIds = []
     for household in households['households']:
         householdId = household['id']
-        groups = requests.get('https://api.ws.sonos.com/control/api/v1/households/{0}/groups'.format(householdId),
+        groups = requests.get('{0}/control/api/v1/households/{1}/groups'.format(SONOSTOOLS_SONOSAPI_ENDPOINT_WS, householdId),
             headers = { "Authorization": "Bearer {0}".format(sonosAccessToken) }).json()
         for player in groups['players']:
             playerIds.append({"playerId": player['id'], "name": player['name']})
