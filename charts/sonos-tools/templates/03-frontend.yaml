@@ -18,11 +18,15 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: {{.Values.DockerRepo}}/sonos-tools-{{.Values.DockerImagePrefix}}_frontend:v{{.Values.ImageVer_Frontend}}
+        image: {{.Values.DockerRepo}}/sonos-tools-{{.Values.DockerImagePrefix}}_frontend:v{{.Values.DockerImageVersion}}
         ports:
         - containerPort: 5001
           name: http
         env:
+        - name: INSTANA_AGENT_HOST
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
         - name: SONOSTOOLS_ENV
           valueFrom:
               configMapKeyRef:
