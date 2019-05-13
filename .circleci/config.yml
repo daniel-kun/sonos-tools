@@ -1,4 +1,4 @@
-version: 2.1
+version: 2
 
 jobs:
   build:
@@ -6,7 +6,6 @@ jobs:
      - image: ubuntu
     steps:
      - checkout
-     - run: echo "${SONOSTOOLS_KUBECONFIG_BASE64}"
      - run: ./ci_prepare.sh
      - run: cat ~/.ci_tmpfiles/kube_config
 
