@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-     - image: ubuntu
+     - image: docker
     steps:
      - checkout
      - run: ./ci_prepare.sh
