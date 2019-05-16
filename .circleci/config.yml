@@ -7,5 +7,4 @@ jobs:
     steps:
      - checkout
      - run: ./ci_prepare.sh
-     - run: cat ~/.ci_tmpfiles/kube_config
 
