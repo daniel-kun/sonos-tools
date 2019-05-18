@@ -9,5 +9,6 @@ jobs:
      - setup_remote_docker
      - run: apt-get update && apt-get install -y git ssh
      - run: ./ci_install_docker.sh
+     - run: ./ci_install_helm.sh
      - run: ./ci_prepare.sh
 
