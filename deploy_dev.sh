@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ~/.sonostools-dev.env
+#source ~/.sonostools-dev.env
 
 args=( --set Env="${SONOSTOOLS_ENV}" \
     --set ClusterPublicIP="${SONOSTOOLS_CLUSTER_PUBLIC_IP}" \

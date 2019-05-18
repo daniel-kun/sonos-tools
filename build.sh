@@ -1,7 +1,6 @@
 #!/bin/bash
 
-COMMIT=`git log --pretty=format:'%H' -n 1`
-VER="commit${COMMIT}"
+VER=$1
 
 build() {
     echo "Building docker image \"$1\" version \"${VER}\""
