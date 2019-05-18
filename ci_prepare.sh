@@ -1,6 +1,7 @@
 #!/bin/bash
 
-SONOSTOOLS_KUBECONFIG=${HOME}/.ci_tmpfiles/kube_config
+mkdir -p ${HOME}/.kube
+SONOSTOOLS_KUBECONFIG=${HOME}/.kube/config
 SONOSTOOLS_TLS_CERTFILE=${HOME}/.ci_tmpfiles/cert
 SONOSTOOLS_TLS_PRIVKEY=${HOME}/.ci_tmpfiles/privkey
 
